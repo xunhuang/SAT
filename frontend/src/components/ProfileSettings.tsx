@@ -1,20 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from './AuthProvider';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { getUserSettings, saveUserSettings, DEFAULT_SETTINGS } from '../services/userSettingsService';
+import eventBus, { EVENTS } from '../services/eventBus';
 import './ProfileSettings.css';
 
-interface UserSettings {
-  defaultQuestionCount: number;
-  secondsPerQuestion: number;
-  notificationEmails: string[];
-}
-
-const DEFAULT_SETTINGS: UserSettings = {
-  defaultQuestionCount: 10,
-  secondsPerQuestion: 60,
-  notificationEmails: []
-};
+// Use UserSettings interface from userSettingsService.ts
 
 // Generate a consistent color based on a string
 const getAvatarColor = (str: string): string => {
@@ -67,17 +57,8 @@ const ProfileSettings: React.FC = () => {
       if (!currentUser) return;
 
       try {
-        const userDocRef = doc(db, 'userSettings', currentUser.uid);
-        const userDoc = await getDoc(userDocRef);
-
-        if (userDoc.exists()) {
-          const userData = userDoc.data() as UserSettings;
-          setSettings({
-            defaultQuestionCount: userData.defaultQuestionCount || DEFAULT_SETTINGS.defaultQuestionCount,
-            secondsPerQuestion: userData.secondsPerQuestion || DEFAULT_SETTINGS.secondsPerQuestion,
-            notificationEmails: userData.notificationEmails || []
-          });
-        }
+        const userSettings = await getUserSettings(currentUser.uid);
+        setSettings(userSettings);
       } catch (error) {
         console.error('Error loading user settings:', error);
       }
@@ -108,8 +89,12 @@ const ProfileSettings: React.FC = () => {
     setSaveMessage(null);
 
     try {
-      const userDocRef = doc(db, 'userSettings', currentUser.uid);
-      await setDoc(userDocRef, settings);
+      // Save settings using the service
+      await saveUserSettings(currentUser.uid, settings);
+      
+      // Emit an event to notify other components
+      eventBus.emit(EVENTS.USER_SETTINGS_UPDATED, settings);
+      
       setSaveMessage({ text: 'Settings saved successfully!', type: 'success' });
       
       // Clear message after 3 seconds

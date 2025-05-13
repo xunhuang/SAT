@@ -1,6 +1,8 @@
 import { getFirebaseAdmin } from '../config/firebase';
 import questionService from './questionService';
 import questionBankService from './questionBankService';
+import userSettingsService from './userSettingsService';
+import emailService from './emailService';
 import { v4 as uuidv4 } from 'uuid';
 
 // Define Test type
@@ -97,6 +99,31 @@ export default {
           console.error('Error removing questions from bank:', removeError);
           // Continue even if removal fails - test was still created successfully
         }
+      }
+      
+      // Send email notification about the new test
+      try {
+        console.log(`Sending email notification for test ${testId}`);
+        
+        // Get user's email and notification preferences
+        const userEmailInfo = await userSettingsService.getUserEmailInfo(userId);
+        
+        if (userEmailInfo.email) {
+          // Send email notification
+          const emailSent = await emailService.sendTestNotification(
+            testId,
+            testName,
+            userEmailInfo.email,
+            userEmailInfo.notificationEmails
+          );
+          
+          console.log(`Email notification ${emailSent ? 'sent' : 'failed'} for test ${testId}`);
+        } else {
+          console.warn(`No primary email found for user ${userId}. Skipping notification.`);
+        }
+      } catch (emailError) {
+        console.error('Error sending email notification:', emailError);
+        // Continue even if email fails - test was still created successfully
       }
       
       return testId;

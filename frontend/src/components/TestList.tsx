@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { generateTest } from '../services/api';
 import { deleteTest as deleteFirestoreTest, getUserTests } from '../services/firestoreService';
-import { getUserSettings, DEFAULT_SETTINGS } from '../services/userSettingsService';
+import { getUserSettings, DEFAULT_SETTINGS, UserSettings } from '../services/userSettingsService';
+import eventBus, { EVENTS } from '../services/eventBus';
 import { Test } from '../App';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../components/AuthProvider';
@@ -36,6 +37,17 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
     };
 
     loadUserSettings();
+
+    // Listen for settings updates
+    const unsubscribe = eventBus.on(EVENTS.USER_SETTINGS_UPDATED, (updatedSettings: UserSettings) => {
+      console.log('[TestList] Received settings update event:', updatedSettings);
+      setQuestionCount(updatedSettings.defaultQuestionCount);
+    });
+
+    // Clean up the event listener on component unmount
+    return () => {
+      unsubscribe();
+    };
   }, [currentUser]);
 
   // Create a new test using the backend service
@@ -54,29 +66,69 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
     setError(null);
 
     try {
-      // Call the backend to generate and save the test
-      const response = await generateTest(currentUser.uid, newTestName, questionCount);
+      // Get the latest user settings right before creating the test
+      try {
+        const userSettings = await getUserSettings(currentUser.uid);
+        // Update question count with the latest setting
+        if (userSettings.defaultQuestionCount !== questionCount) {
+          console.log('[TestList] Updating question count from settings:', userSettings.defaultQuestionCount);
+          setQuestionCount(userSettings.defaultQuestionCount);
+        }
+        
+        // Use the fresh settings for test creation
+        const freshQuestionCount = userSettings.defaultQuestionCount;
+        
+        // Call the backend to generate and save the test
+        const response = await generateTest(currentUser.uid, newTestName, freshQuestionCount);
 
-      if (response.error) {
-        console.error('[TestList] Error generating test:', response.error);
-        setError(response.error);
-        return;
+        if (response.error) {
+          console.error('[TestList] Error generating test:', response.error);
+          setError(response.error);
+          return;
+        }
+
+        if (!response.data || !response.data.testId) {
+          console.error('[TestList] Invalid response format:', response);
+          setError('Received invalid data from the server. Please try again.');
+          return;
+        }
+
+        console.log('[TestList] Test generated successfully with ID:', response.data.testId);
+        
+        // Fetch the updated list of tests to get the newly created test
+        const userTests = await getUserTests(currentUser.uid);
+        updateTests(userTests);
+
+        setNewTestName('');
+        setIsCreatingTest(false);
+      } catch (settingsError) {
+        console.error('[TestList] Error getting fresh settings:', settingsError);
+        // Fall back to current state value if settings fetch fails
+        
+        // Call the backend to generate and save the test
+        const response = await generateTest(currentUser.uid, newTestName, questionCount);
+
+        if (response.error) {
+          console.error('[TestList] Error generating test:', response.error);
+          setError(response.error);
+          return;
+        }
+
+        if (!response.data || !response.data.testId) {
+          console.error('[TestList] Invalid response format:', response);
+          setError('Received invalid data from the server. Please try again.');
+          return;
+        }
+
+        console.log('[TestList] Test generated successfully with ID:', response.data.testId);
+        
+        // Fetch the updated list of tests to get the newly created test
+        const userTests = await getUserTests(currentUser.uid);
+        updateTests(userTests);
+
+        setNewTestName('');
+        setIsCreatingTest(false);
       }
-
-      if (!response.data || !response.data.testId) {
-        console.error('[TestList] Invalid response format:', response);
-        setError('Received invalid data from the server. Please try again.');
-        return;
-      }
-
-      console.log('[TestList] Test generated successfully with ID:', response.data.testId);
-      
-      // Fetch the updated list of tests to get the newly created test
-      const userTests = await getUserTests(currentUser.uid);
-      updateTests(userTests);
-
-      setNewTestName('');
-      setIsCreatingTest(false);
     } catch (err) {
       setError('Failed to create test. Please try again.');
       console.error('Error creating test:', err);
