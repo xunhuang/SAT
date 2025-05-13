@@ -1,17 +1,17 @@
-import { 
-  collection, 
-  doc, 
-  setDoc, 
-  getDocs, 
-  deleteDoc, 
-  query, 
-  where, 
-  orderBy, 
-  Timestamp 
+import {
+  collection,
+  doc,
+  setDoc,
+  getDocs,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  Timestamp,
+  getDoc
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import { Test } from '../App';
-import { SATQuestion } from './api';
 
 /**
  * Converts a Firestore test document to a Test object
@@ -37,12 +37,12 @@ export const saveTest = async (userId: string, test: Test): Promise<void> => {
       createdAt: Timestamp.fromDate(test.createdAt),
       userId
     };
-    
+
     // Use the test's ID as the document ID
     await setDoc(doc(db, 'tests', test.id), testDoc);
-    console.log('Test saved successfully');
+    console.log('[FirestoreService] Test saved successfully to Firestore');
   } catch (error) {
-    console.error('Error saving test:', error);
+    console.error('[FirestoreService] Error saving test:', error);
     throw error;
   }
 };
@@ -52,7 +52,7 @@ export const saveTest = async (userId: string, test: Test): Promise<void> => {
  */
 export const getUserTests = async (userId: string): Promise<Test[]> => {
   try {
-    console.log('Querying Firestore for tests with userId:', userId);
+    console.log('[FirestoreService] Getting tests for user:', userId);
 
     // First try with composite query (requires an index)
     try {
@@ -63,19 +63,19 @@ export const getUserTests = async (userId: string): Promise<Test[]> => {
       );
 
       const querySnapshot = await getDocs(testsQuery);
-      console.log('Query snapshot size:', querySnapshot.size);
+      console.log('[FirestoreService] Query snapshot size:', querySnapshot.size);
 
       const tests: Test[] = [];
 
       querySnapshot.forEach((doc) => {
-        console.log('Document data:', doc.id, doc.data());
-        tests.push(firestoreToTest(doc));
+        const test = firestoreToTest(doc);
+        tests.push(test);
       });
 
       return tests;
     } catch (indexError) {
       // If we get an index error, fallback to simpler query without ordering
-      console.warn('Index error, falling back to simple query:', indexError);
+      console.warn('[FirestoreService] Index error, falling back to simple query:', indexError);
 
       const simpleQuery = query(
         collection(db, 'tests'),
@@ -83,20 +83,20 @@ export const getUserTests = async (userId: string): Promise<Test[]> => {
       );
 
       const querySnapshot = await getDocs(simpleQuery);
-      console.log('Simple query snapshot size:', querySnapshot.size);
+      console.log('[FirestoreService] Simple query snapshot size:', querySnapshot.size);
 
       const tests: Test[] = [];
 
       querySnapshot.forEach((doc) => {
-        console.log('Simple query document data:', doc.id, doc.data());
-        tests.push(firestoreToTest(doc));
+        const test = firestoreToTest(doc);
+        tests.push(test);
       });
 
       // Sort manually
       return tests.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
     }
   } catch (error) {
-    console.error('Error getting tests:', error);
+    console.error('[FirestoreService] Error getting tests:', error);
     throw error;
   }
 };
@@ -107,9 +107,9 @@ export const getUserTests = async (userId: string): Promise<Test[]> => {
 export const deleteTest = async (testId: string): Promise<void> => {
   try {
     await deleteDoc(doc(db, 'tests', testId));
-    console.log('Test deleted successfully');
+    console.log('[FirestoreService] Test deleted successfully from Firestore');
   } catch (error) {
-    console.error('Error deleting test:', error);
+    console.error('[FirestoreService] Error deleting test:', error);
     throw error;
   }
 };
@@ -125,11 +125,11 @@ export const updateTest = async (userId: string, test: Test): Promise<void> => {
       createdAt: Timestamp.fromDate(test.createdAt),
       userId
     };
-    
+
     await setDoc(doc(db, 'tests', test.id), testDoc, { merge: true });
-    console.log('Test updated successfully');
+    console.log('[FirestoreService] Test updated successfully in Firestore');
   } catch (error) {
-    console.error('Error updating test:', error);
+    console.error('[FirestoreService] Error updating test:', error);
     throw error;
   }
 };

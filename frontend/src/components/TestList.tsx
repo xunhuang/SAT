@@ -101,8 +101,8 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
       await saveTest(currentUser.uid, newTest);
       console.log('[TestList] Test saved successfully');
 
-      // Add the new test to the local state
-      const updatedTests = [...tests, newTest];
+      // Add the new test to the local state (at the beginning since it's newest)
+      const updatedTests = [newTest, ...tests];
       updateTests(updatedTests);
 
       setNewTestName('');

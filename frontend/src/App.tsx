@@ -122,22 +122,26 @@ function AppWithAuth() {
 
         // Import dynamically to avoid circular dependencies
         const { getUserTests } = await import('./services/firestoreService');
+
+        // Get tests from Firestore
         const userTests = await getUserTests(currentUser.uid);
 
         console.log('[App] Loaded tests count:', userTests.length);
-        console.log('[App] Test IDs:', userTests.map(t => t.id));
 
-        if (userTests.length === 0) {
-          console.warn('[App] No tests found for user');
-        } else {
+        if (userTests.length > 0) {
+          console.log('[App] First few test IDs:', userTests.slice(0, 3).map(t => t.id));
+
           // Verify test data integrity
           const testsWithIssues = userTests.filter(
             test => !test.questions || !Array.isArray(test.questions) || test.questions.length === 0
           );
 
           if (testsWithIssues.length > 0) {
-            console.error('[App] Found tests with missing or invalid questions:', testsWithIssues);
+            console.error('[App] Found tests with missing or invalid questions:',
+              testsWithIssues.map(t => ({ id: t.id, name: t.name })));
           }
+        } else {
+          console.warn('[App] No tests found for user');
         }
 
         setTests(userTests);

@@ -1,11 +1,11 @@
-import { 
-  collection, 
-  doc, 
-  setDoc, 
-  getDocs, 
-  query, 
-  where, 
-  orderBy, 
+import {
+  collection,
+  doc,
+  setDoc,
+  getDocs,
+  query,
+  where,
+  orderBy,
   Timestamp,
   getDoc
 } from 'firebase/firestore';
@@ -34,18 +34,18 @@ export interface TestAttempt {
  * Save a test attempt to Firestore
  */
 export const saveTestAttempt = async (
-  userId: string, 
-  test: Test, 
-  userAnswers: Record<string, string>, 
+  userId: string,
+  test: Test,
+  userAnswers: Record<string, string>,
   score: number
 ): Promise<string> => {
   try {
     // Generate an ID for the attempt
     const attemptId = `attempt-${Date.now()}`;
-    
+
     // Calculate percentage
     const percentage = Math.round((score / test.questions.length) * 100);
-    
+
     // Create the attempt object with a complete copy of the test questions
     const attempt: TestAttempt = {
       id: attemptId,
@@ -59,17 +59,19 @@ export const saveTestAttempt = async (
       testName: test.name,
       questions: [...test.questions] // Store a complete copy of the questions
     };
-    
-    // Save to Firestore
-    await setDoc(doc(db, 'testAttempts', attemptId), {
+
+    // Prepare Firestore document
+    const firestoreAttempt = {
       ...attempt,
       completedAt: Timestamp.fromDate(attempt.completedAt)
-    });
-    
-    console.log('Test attempt saved:', attemptId);
+    };
+
+    await setDoc(doc(db, 'testAttempts', attemptId), firestoreAttempt);
+    console.log('[testAttemptService] Test attempt saved to Firestore:', attemptId);
+
     return attemptId;
   } catch (error) {
-    console.error('Error saving test attempt:', error);
+    console.error('[testAttemptService] Error saving test attempt:', error);
     throw error;
   }
 };
@@ -103,13 +105,15 @@ export const getUserTestAttempts = async (userId: string): Promise<TestAttempt[]
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        attempts.push({
+        const attempt = {
           ...data,
           id: doc.id,
           completedAt: data.completedAt?.toDate() || new Date(),
           // Ensure questions array exists (for backward compatibility)
           questions: data.questions || []
-        } as TestAttempt);
+        } as TestAttempt;
+
+        attempts.push(attempt);
       });
 
       return attempts;
@@ -124,13 +128,15 @@ export const getUserTestAttempts = async (userId: string): Promise<TestAttempt[]
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        attempts.push({
+        const attempt = {
           ...data,
           id: doc.id,
           completedAt: data.completedAt?.toDate() || new Date(),
           // Ensure questions array exists (for backward compatibility)
           questions: data.questions || []
-        } as TestAttempt);
+        } as TestAttempt;
+
+        attempts.push(attempt);
       });
 
       // Sort manually
@@ -182,9 +188,10 @@ export const getTestAttempts = async (userId: string, testId: string): Promise<T
  */
 export const getTestAttemptById = async (attemptId: string): Promise<TestAttempt | null> => {
   try {
+    console.log('[testAttemptService] Fetching test attempt from Firestore:', attemptId);
     const docRef = doc(db, 'testAttempts', attemptId);
     const docSnap = await getDoc(docRef);
-    
+
     if (docSnap.exists()) {
       const data = docSnap.data();
       return {
@@ -195,10 +202,10 @@ export const getTestAttemptById = async (attemptId: string): Promise<TestAttempt
         questions: data.questions || []
       } as TestAttempt;
     }
-    
+
     return null;
   } catch (error) {
-    console.error('Error getting test attempt:', error);
+    console.error('[testAttemptService] Error getting test attempt:', error);
     throw error;
   }
 };
