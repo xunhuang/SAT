@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { getQuestions } from '../services/api';
 import { saveTest, deleteTest as deleteFirestoreTest } from '../services/firestoreService';
+import { getUserSettings, DEFAULT_SETTINGS } from '../services/userSettingsService';
 import { Test } from '../App';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../components/AuthProvider';
@@ -18,7 +19,24 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
   const [error, setError] = useState<string | null>(null);
   const [isCreatingTest, setIsCreatingTest] = useState(false);
   const [newTestName, setNewTestName] = useState('');
+  const [questionCount, setQuestionCount] = useState(DEFAULT_SETTINGS.defaultQuestionCount);
   const { currentUser } = useAuth();
+
+  // Load user's default question count setting
+  useEffect(() => {
+    const loadUserSettings = async () => {
+      if (!currentUser) return;
+
+      try {
+        const userSettings = await getUserSettings(currentUser.uid);
+        setQuestionCount(userSettings.defaultQuestionCount);
+      } catch (error) {
+        console.error('Error loading user settings:', error);
+      }
+    };
+
+    loadUserSettings();
+  }, [currentUser]);
 
   // Create a new test by fetching questions from the backend
   const createNewTest = async () => {
@@ -36,8 +54,8 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
     setError(null);
 
     try {
-      // Fetch a set of questions (10 by default)
-      const response = await getQuestions(1, 10);
+      // Fetch questions using the user's preferred question count setting
+      const response = await getQuestions(1, questionCount);
 
       if (response.error) {
         console.error('[TestList] Error fetching questions:', response.error);

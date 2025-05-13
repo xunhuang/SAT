@@ -8,6 +8,7 @@ import TestView from './components/TestView';
 import ReviewAttempt from './components/ReviewAttempt';
 import ApiHealth from './components/ApiHealth';
 import Login from './components/Login';
+import ProfileSettings from './components/ProfileSettings';
 
 // Define Test type for the app
 export interface Test {
@@ -42,7 +43,7 @@ const AppLayout = ({ children }: { children: JSX.Element }) => {
         <Link to="/" className="app-title">
           <h1>SAT Practice</h1>
         </Link>
-        
+
         <div className="app-nav">
           {currentUser && (
             <>
@@ -52,8 +53,7 @@ const AppLayout = ({ children }: { children: JSX.Element }) => {
           )}
           {currentUser ? (
             <div className="user-info">
-              <span className="user-email">{currentUser.email}</span>
-              <Login isLoggedIn={true} userEmail={currentUser.email} />
+              <ProfileSettings />
             </div>
           ) : (
             <Login isLoggedIn={false} userEmail={null} />

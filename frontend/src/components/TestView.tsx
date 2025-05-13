@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { SATQuestion } from '../services/api';
 import { saveTestAttempt } from '../services/testAttemptService';
+import { getUserSettings, DEFAULT_SETTINGS, sendTestAttemptNotifications } from '../services/userSettingsService';
 import { useAuth } from '../components/AuthProvider';
 import './TestView.css';
 
@@ -96,7 +97,20 @@ const TestView = ({ tests }: TestViewProps) => {
       setUserAnswers({});
       setShowResults(false);
       setReviewMode(false);
-      setTimeRemaining(testData.questions.length * 60);
+
+      // Load the user's seconds per question setting
+      if (currentUser) {
+        getUserSettings(currentUser.uid)
+          .then(settings => {
+            setTimeRemaining(testData.questions.length * settings.secondsPerQuestion);
+          })
+          .catch(error => {
+            console.error('[TestView] Error loading user settings, using default timer:', error);
+            setTimeRemaining(testData.questions.length * DEFAULT_SETTINGS.secondsPerQuestion);
+          });
+      } else {
+        setTimeRemaining(testData.questions.length * DEFAULT_SETTINGS.secondsPerQuestion);
+      }
 
       return true;
     } catch (error) {
@@ -139,7 +153,16 @@ const TestView = ({ tests }: TestViewProps) => {
           setUserAnswers({});
           setShowResults(false);
           setReviewMode(false);
-          setTimeRemaining(test.questions.length * 60);
+
+          // Load the user's seconds per question setting
+          getUserSettings(currentUser.uid)
+            .then(settings => {
+              setTimeRemaining(test.questions.length * settings.secondsPerQuestion);
+            })
+            .catch(error => {
+              console.error('[TestView] Error loading user settings, using default timer:', error);
+              setTimeRemaining(test.questions.length * DEFAULT_SETTINGS.secondsPerQuestion);
+            });
           return;
         }
       }
@@ -344,6 +367,15 @@ const TestView = ({ tests }: TestViewProps) => {
         setAttemptSaved(true);
         setAttemptId(savedAttemptId);
         console.log('Test attempt saved with ID:', savedAttemptId);
+
+        // Send notifications to configured email addresses
+        await sendTestAttemptNotifications(
+          currentUser.uid,
+          currentTest.id,
+          currentTest.name,
+          score,
+          currentTest.questions.length
+        );
       } catch (error) {
         console.error('Error saving test attempt:', error);
         setSaveError('There was an error saving your results. Your progress may not be recorded.');
