@@ -101,6 +101,24 @@ export const getQuestionIds = async (): Promise<ApiResponse<string[]>> => {
   return apiRequest<string[]>('/questions/ids');
 };
 
+/**
+ * Generate a new test in the backend
+ */
+export const generateTest = async (
+  userId: string, 
+  testName: string, 
+  numQuestions: number
+): Promise<ApiResponse<{testId: string}>> => {
+  return apiRequest<{testId: string}>('/tests/generate', {
+    method: 'POST',
+    body: JSON.stringify({
+      userId,
+      testName,
+      numQuestions
+    })
+  });
+};
+
 export default {
   apiRequest,
   checkApiHealth,
@@ -108,4 +126,5 @@ export default {
   getQuestionById,
   getRandomQuestion,
   getQuestionIds,
+  generateTest,
 };

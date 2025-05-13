@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { getQuestions } from '../services/api';
-import { saveTest, deleteTest as deleteFirestoreTest } from '../services/firestoreService';
+import { generateTest } from '../services/api';
+import { deleteTest as deleteFirestoreTest, getUserTests } from '../services/firestoreService';
 import { getUserSettings, DEFAULT_SETTINGS } from '../services/userSettingsService';
 import { Test } from '../App';
 import { Link } from 'react-router-dom';
@@ -38,7 +38,7 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
     loadUserSettings();
   }, [currentUser]);
 
-  // Create a new test by fetching questions from the backend
+  // Create a new test using the backend service
   const createNewTest = async () => {
     if (!newTestName.trim()) {
       setError('Please enter a test name');
@@ -54,56 +54,26 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
     setError(null);
 
     try {
-      // Fetch questions using the user's preferred question count setting
-      const response = await getQuestions(1, questionCount);
+      // Call the backend to generate and save the test
+      const response = await generateTest(currentUser.uid, newTestName, questionCount);
 
       if (response.error) {
-        console.error('[TestList] Error fetching questions:', response.error);
+        console.error('[TestList] Error generating test:', response.error);
         setError(response.error);
         return;
       }
 
-      if (!response.data || !response.data.questions || !Array.isArray(response.data.questions)) {
+      if (!response.data || !response.data.testId) {
         console.error('[TestList] Invalid response format:', response);
         setError('Received invalid data from the server. Please try again.');
         return;
       }
 
-      if (response.data.questions.length === 0) {
-        console.error('[TestList] No questions returned from API');
-        setError('No questions available. Please try again later.');
-        return;
-      }
-
-      // Create a new test with the fetched questions
-      const newTest: Test = {
-        id: `test-${Date.now()}`,
-        name: newTestName,
-        questions: response.data.questions,
-        createdAt: new Date()
-      };
-
-      // Validate test data
-      if (!newTest.questions || newTest.questions.length === 0) {
-        console.error('[TestList] Created test has no questions:', newTest);
-        setError('Failed to create test with questions. Please try again.');
-        return;
-      }
-
-      // Save to Firestore
-      console.log('[TestList] Saving test to Firestore for user:', currentUser.uid);
-      console.log('[TestList] Test data:', {
-        id: newTest.id,
-        name: newTest.name,
-        questionCount: newTest.questions.length
-      });
-
-      await saveTest(currentUser.uid, newTest);
-      console.log('[TestList] Test saved successfully');
-
-      // Add the new test to the local state (at the beginning since it's newest)
-      const updatedTests = [newTest, ...tests];
-      updateTests(updatedTests);
+      console.log('[TestList] Test generated successfully with ID:', response.data.testId);
+      
+      // Fetch the updated list of tests to get the newly created test
+      const userTests = await getUserTests(currentUser.uid);
+      updateTests(userTests);
 
       setNewTestName('');
       setIsCreatingTest(false);
