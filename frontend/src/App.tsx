@@ -87,6 +87,34 @@ const LoginPage = () => {
 function AppWithAuth() {
   // We'll store tests in state at the App level to share between components
   const [tests, setTests] = useState<Test[]>([]);
+  const [loading, setLoading] = useState(false);
+  const { currentUser } = useAuth();
+
+  // Load user's tests from Firestore when user logs in
+  useEffect(() => {
+    const loadUserTests = async () => {
+      if (!currentUser) {
+        setTests([]);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        console.log('Loading tests for user:', currentUser.uid);
+        // Import dynamically to avoid circular dependencies
+        const { getUserTests } = await import('./services/firestoreService');
+        const userTests = await getUserTests(currentUser.uid);
+        console.log('Loaded tests:', userTests);
+        setTests(userTests);
+      } catch (error) {
+        console.error('Error loading tests:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUserTests();
+  }, [currentUser]);
 
   // Callback function to update tests from child components
   const updateTests = useCallback((newTests: Test[]) => {
@@ -104,7 +132,11 @@ function AppWithAuth() {
       <Route path="/" element={
         <ProtectedRoute>
           <AppLayout>
-            <TestList tests={tests} updateTests={updateTests} />
+            <TestList
+              tests={tests}
+              updateTests={updateTests}
+              isLoadingTests={loading}
+            />
           </AppLayout>
         </ProtectedRoute>
       } />
