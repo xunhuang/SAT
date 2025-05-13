@@ -458,9 +458,10 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
         correctCount++;
       } else if (userAnswer) {
         // If wrong answer, collect details for the email
+        // Send the raw stimulus - SVG conversion will happen on the backend
         wrongAnswers.push({
           question: question.stem,
-          stimulus: question.stimulus || '',  // Include stimulus if available
+          stimulus: question.stimulus || '',  // Include raw stimulus with SVG if present
           options: question.answerOptions,
           userAnswer: userAnswer,
           correctAnswer: question.keys[0], // Use first correct answer

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import emailService from '../services/emailService';
 import userSettingsService from '../services/userSettingsService';
+import imageConversionService from '../services/imageConversionService';
 
 /**
  * Email Controller
@@ -57,6 +58,25 @@ export default {
           error: 'User email not found', 
           message: 'No email is available for this user. Email notification was not sent.'
         });
+      }
+      
+      // Process wrongAnswers to convert SVG to PNG if needed
+      if (wrongAnswers && wrongAnswers.length > 0) {
+        // Process each question's stimulus if it contains SVG
+        for (let i = 0; i < wrongAnswers.length; i++) {
+          if (wrongAnswers[i].stimulus && wrongAnswers[i].stimulus.includes('<svg')) {
+            try {
+              // Convert SVG in stimulus to PNG
+              wrongAnswers[i].stimulus = await imageConversionService.processSvgInHtml(wrongAnswers[i].stimulus);
+            } catch (conversionError) {
+              console.error('Error converting SVG to PNG:', conversionError);
+              // If conversion fails, provide a fallback message
+              wrongAnswers[i].stimulus = `<div style="padding: 10px; border: 1px solid #ccc; background-color: #f9f9f9; margin: 10px 0;">
+                <p><strong>[Image]</strong> A graphical element is available in the online version.</p>
+              </div>`;
+            }
+          }
+        }
       }
       
       // Send email notification

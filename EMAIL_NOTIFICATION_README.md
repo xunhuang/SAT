@@ -42,6 +42,7 @@ The frontend has been updated to integrate with this backend functionality:
 
 1. **API Service** (`api.ts`):
    - Already included a `sendTestAttemptEmail` function that calls the backend endpoint
+   - Updated to handle SVG/graphical content in questions
 
 2. **User Settings Service** (`userSettingsService.ts`):
    - Updated `sendTestAttemptNotifications` to use the API service
@@ -50,6 +51,7 @@ The frontend has been updated to integrate with this backend functionality:
 3. **Test View Component** (`TestView.tsx`):
    - Updated the `submitTest` function to:
      - Calculate time taken for the test
+     - Process graphical content for email compatibility
      - Call the updated notification function with all required parameters
      - Handle success/failure of email sending
 
@@ -73,8 +75,25 @@ To test this functionality:
   - `EMAIL_FROM`
   - `BASE_URL`
 
+## SVG to PNG Conversion for Email
+
+Since many SAT questions include SVG graphs and diagrams that cannot be directly rendered in emails:
+
+1. SVG content in questions is sent to the backend with the test attempt data
+2. The backend processes these SVGs using a dedicated `imageConversionService`:
+   - SVG content is extracted from HTML
+   - Each SVG is converted to a PNG image using pure Node.js libraries (svg2img and sharp)
+   - The PNG is encoded as a base64 data URL
+   - The SVG in HTML is replaced with an `<img>` tag containing the PNG data URL
+3. This allows graphical content to be properly displayed in HTML emails
+4. For plain text emails:
+   - A note directs users to view the HTML version or use the review link
+   
+This approach ensures users can see the actual diagrams and graphs directly in their email clients, providing a much better experience than text descriptions alone, with no dependencies on external system tools.
+
 ## Future Enhancements
 
 - Add user interface for managing notification email preferences
 - Add email templates for other events (test creation, study reminders, etc.)
 - Implement unsubscribe functionality for notification emails
+- Enhance handling of mathematical formulas and equations in emails

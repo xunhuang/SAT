@@ -68,6 +68,26 @@ The wrong answers section in the email:
      - Correct answer (highlighted in green)
    - The explanation provided for the correct answer
 
+## SVG to PNG Conversion
+
+Many SAT questions include SVG graphs or diagrams that cannot be directly rendered in email clients. To address this:
+
+1. Frontend: Send raw SVG content to the backend
+   - The frontend collects the original stimulus content including SVG tags
+   - This raw content is included in the wrongAnswers array sent to the backend
+
+2. Backend: Process SVG content using `imageConversionService`
+   - SVG content is extracted from the HTML using regex
+   - Each SVG is converted to a PNG image using pure Node.js libraries (svg2img and sharp)
+   - The PNG is encoded as a base64 data URL
+   - The original SVG tag is replaced with an <img> tag containing the PNG data
+
+3. Email Rendering:
+   - HTML emails display the actual graphs/diagrams as PNG images
+   - Plain text emails include a note to view the HTML version
+
+This approach ensures that users can see the actual visual content within their email client rather than just reading a description, providing a much better experience.
+
 ## Benefits
 
 - Users get immediate feedback on their mistakes

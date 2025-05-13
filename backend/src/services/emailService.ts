@@ -186,7 +186,7 @@ The SAT Practice Team
               <p style="font-weight: bold; margin-bottom: 10px;">Question ${index + 1}:</p>
               <div style="margin-bottom: 15px;">${item.question}</div>
               
-              ${item.stimulus ? `<div style="margin-bottom: 15px; font-style: italic; border-left: 2px solid #ddd; padding-left: 10px;">${item.stimulus}</div>` : ''}
+              ${item.stimulus ? `<div style="margin-bottom: 15px;">${item.stimulus}</div>` : ''}
               
               <div style="margin-bottom: 10px;">
                 ${item.options.map((option, optionIndex) => `
@@ -215,7 +215,7 @@ The SAT Practice Team
         wrongAnswersText = '\n\nQuestions You Missed:\n\n' + 
           wrongAnswers.map((item, index) => 
             `Question ${index + 1}: ${item.question}\n` + 
-            `${item.stimulus ? 'Stimulus: ' + item.stimulus + '\n' : ''}` +
+            `${item.stimulus ? 'Stimulus: [See email HTML version or review answers online for complete graphs and images]\n' : ''}` +
             `${item.options.map((opt, i) => `${String.fromCharCode(65 + i)}. ${opt.content}${opt.id === item.userAnswer ? ' (Your Answer)' : ''}${opt.id === item.correctAnswer ? ' (Correct Answer)' : ''}`).join('\n')}\n` + 
             `Explanation: ${item.explanation || 'No explanation available.'}\n`
           ).join('\n');
