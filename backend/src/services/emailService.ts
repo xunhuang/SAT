@@ -225,7 +225,7 @@ The SAT Practice Team
       const mailOptions = {
         from: `"SAT Practice" <${EMAIL_FROM}>`,
         to: allRecipients.join(', '),
-        subject: `SAT Practice Test Results: ${testName}`,
+        subject: `SAT Practice Results: ${testName} - ${score}/${totalQuestions} (${percentage}%)`,
         text: `
 Hello,
 
