@@ -1,0 +1,275 @@
+.profile-settings-container {
+  position: relative;
+}
+
+.profile-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.profile-image, .profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #3498db;
+  transition: border-color 0.2s ease;
+}
+
+.profile-image {
+  object-fit: cover;
+}
+
+.profile-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.profile-button:hover .profile-image,
+.profile-button:hover .profile-avatar {
+  border-color: #2980b9;
+}
+
+.profile-popup {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 360px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  overflow: hidden;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.profile-header {
+  padding: 1.25rem;
+  border-bottom: 1px solid #e1e8ed;
+  background-color: #f8f9fa;
+}
+
+.profile-header h3 {
+  margin: 0 0 0.75rem 0;
+  color: #2c3e50;
+  font-size: 1.25rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.profile-image-large, .profile-avatar-large {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 0.75rem;
+  border: 2px solid #3498db;
+}
+
+.profile-image-large {
+  object-fit: cover;
+}
+
+.profile-avatar-large {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.user-details {
+  flex: 1;
+}
+
+.user-name {
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+  color: #2c3e50;
+}
+
+.user-email {
+  font-size: 0.875rem;
+  margin: 0;
+  color: #7f8c8d;
+}
+
+.settings-section {
+  padding: 1.25rem;
+  border-bottom: 1px solid #e1e8ed;
+}
+
+.settings-section h4 {
+  margin: 0 0 1rem 0;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.setting-item label {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #34495e;
+}
+
+.setting-item input {
+  width: 70px;
+  padding: 0.5rem;
+  border: 1px solid #e1e8ed;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #34495e;
+  text-align: center;
+}
+
+.notification-description {
+  font-size: 0.875rem;
+  color: #7f8c8d;
+  margin: 0 0 1rem 0;
+}
+
+.email-input-container {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.email-input-container input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #e1e8ed;
+  border-radius: 4px 0 0 4px;
+  font-size: 0.9rem;
+}
+
+.add-email-button {
+  padding: 0.5rem 1rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.add-email-button:hover {
+  background-color: #2980b9;
+}
+
+.email-list {
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.no-emails {
+  font-size: 0.875rem;
+  color: #7f8c8d;
+  text-align: center;
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+.email-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background-color: #f1f5f9;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.email-item span {
+  font-size: 0.9rem;
+  color: #34495e;
+}
+
+.remove-email-button {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  line-height: 1;
+}
+
+.profile-actions {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.save-message {
+  padding: 0.5rem;
+  border-radius: 4px;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.save-message.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.save-message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.save-settings-button,
+.sign-out-button {
+  padding: 0.75rem;
+  border-radius: 4px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 0.75rem;
+}
+
+.save-settings-button {
+  background-color: #3498db;
+  color: white;
+}
+
+.save-settings-button:hover {
+  background-color: #2980b9;
+}
+
+.save-settings-button:disabled {
+  background-color: #a0c9e7;
+  cursor: not-allowed;
+}
+
+.sign-out-button {
+  background-color: #f8f9fa;
+  color: #34495e;
+  border: 1px solid #e1e8ed;
+}
+
+.sign-out-button:hover {
+  background-color: #e9ecef;
+}
