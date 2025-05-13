@@ -6,6 +6,7 @@ import { SATQuestion } from './services/api';
 import TestList from './components/TestList';
 import TestView from './components/TestView';
 import ReviewAttempt from './components/ReviewAttempt';
+import RetakeTest from './components/RetakeTest';
 import ApiHealth from './components/ApiHealth';
 import Login from './components/Login';
 import ProfileSettings from './components/ProfileSettings';
@@ -187,6 +188,14 @@ function AppWithAuth() {
         <ProtectedRoute>
           <AppLayout>
             <ReviewAttempt />
+          </AppLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/retake/:attemptId" element={
+        <ProtectedRoute>
+          <AppLayout>
+            <RetakeTest />
           </AppLayout>
         </ProtectedRoute>
       } />

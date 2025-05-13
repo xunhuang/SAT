@@ -13,9 +13,10 @@ interface TestViewProps {
     questions: SATQuestion[];
     createdAt: Date;
   }[];
+  fromRetake?: boolean; // Flag to indicate if this test is from a retake
 }
 
-const TestView = ({ tests }: TestViewProps) => {
+const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
   const { testId } = useParams<{ testId: string }>();
   const navigate = useNavigate();
   const { currentUser } = useAuth(); // Get the current authenticated user
@@ -126,6 +127,42 @@ const TestView = ({ tests }: TestViewProps) => {
       console.log('[TestView] Finding test with testId:', testId);
       console.log('[TestView] Available tests from props:', tests);
       console.log('[TestView] Tests array length:', tests.length);
+      console.log('[TestView] From retake:', fromRetake);
+
+      // If we're coming from a retake, use the test that was passed in props directly
+      if (fromRetake && tests && tests.length === 1) {
+        const test = tests[0];
+        console.log('[TestView] Using test from retake:', test.name);
+
+        // Validate questions
+        if (!test.questions || !Array.isArray(test.questions) || test.questions.length === 0) {
+          console.error('[TestView] Retake test has no questions:', test);
+          setErrorMessage('This test has no questions. Please try another test.');
+          return;
+        }
+
+        // Set test data
+        setCurrentTest(test);
+        setCurrentQuestionIndex(0);
+        setUserAnswers({});
+        setShowResults(false);
+        setReviewMode(false);
+
+        // Load the user's seconds per question setting
+        if (currentUser) {
+          getUserSettings(currentUser.uid)
+            .then(settings => {
+              setTimeRemaining(test.questions.length * settings.secondsPerQuestion);
+            })
+            .catch(error => {
+              console.error('[TestView] Error loading user settings, using default timer:', error);
+              setTimeRemaining(test.questions.length * DEFAULT_SETTINGS.secondsPerQuestion);
+            });
+        } else {
+          setTimeRemaining(test.questions.length * DEFAULT_SETTINGS.secondsPerQuestion);
+        }
+        return;
+      }
 
       if (!testId) {
         console.error('[TestView] No testId provided');
@@ -181,7 +218,7 @@ const TestView = ({ tests }: TestViewProps) => {
     };
 
     loadTest();
-  }, [testId, tests, currentUser]);
+  }, [testId, tests, currentUser, fromRetake]);
 
   // Timer effect
   useEffect(() => {

@@ -91,7 +91,7 @@ const TestHistory = () => {
                   Review Attempt
                 </Link>
                 <Link
-                  to={`/test/${attempt.testId}`}
+                  to={`/retake/${attempt.id}`}
                   className="retake-button"
                 >
                   Retake Test
