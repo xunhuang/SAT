@@ -146,6 +146,8 @@ const TestView = ({ tests }: TestViewProps) => {
   // Submit the test
   const submitTest = () => {
     setShowResults(true);
+    // Reset to first question to show results page
+    setCurrentQuestionIndex(0);
   };
 
   // Calculate score
@@ -205,7 +207,7 @@ const TestView = ({ tests }: TestViewProps) => {
 
   return (
     <div className="test-view-container">
-      {showResults && currentQuestionIndex === 0 && !reviewMode ? (
+      {showResults && !reviewMode ? (
         renderTestResults()
       ) : (
         <>
@@ -335,6 +337,7 @@ const TestView = ({ tests }: TestViewProps) => {
                   className="results-button"
                   onClick={() => {
                     setCurrentQuestionIndex(0);
+                    setReviewMode(false);
                   }}
                 >
                   View Results
