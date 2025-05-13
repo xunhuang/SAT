@@ -10,6 +10,18 @@
   margin-bottom: 2rem;
 }
 
+.tests-section {
+  margin-bottom: 3rem;
+}
+
+.tests-section h2 {
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e1e8ed;
+}
+
 .test-actions {
   display: flex;
   justify-content: center;

@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from './components/AuthProvider';
 import { SATQuestion } from './services/api';
 import TestList from './components/TestList';
 import TestView from './components/TestView';
+import ReviewAttempt from './components/ReviewAttempt';
 import ApiHealth from './components/ApiHealth';
 import Login from './components/Login';
 
@@ -94,20 +95,38 @@ function AppWithAuth() {
   useEffect(() => {
     const loadUserTests = async () => {
       if (!currentUser) {
+        console.log('[App] No current user, clearing tests');
         setTests([]);
         return;
       }
 
       try {
         setLoading(true);
-        console.log('Loading tests for user:', currentUser.uid);
+        console.log('[App] Loading tests for user:', currentUser.uid);
+
         // Import dynamically to avoid circular dependencies
         const { getUserTests } = await import('./services/firestoreService');
         const userTests = await getUserTests(currentUser.uid);
-        console.log('Loaded tests:', userTests);
+
+        console.log('[App] Loaded tests count:', userTests.length);
+        console.log('[App] Test IDs:', userTests.map(t => t.id));
+
+        if (userTests.length === 0) {
+          console.warn('[App] No tests found for user');
+        } else {
+          // Verify test data integrity
+          const testsWithIssues = userTests.filter(
+            test => !test.questions || !Array.isArray(test.questions) || test.questions.length === 0
+          );
+
+          if (testsWithIssues.length > 0) {
+            console.error('[App] Found tests with missing or invalid questions:', testsWithIssues);
+          }
+        }
+
         setTests(userTests);
       } catch (error) {
-        console.error('Error loading tests:', error);
+        console.error('[App] Error loading tests:', error);
       } finally {
         setLoading(false);
       }
@@ -128,7 +147,7 @@ function AppWithAuth() {
           <LoginPage />
         </AppLayout>
       } />
-      
+
       <Route path="/" element={
         <ProtectedRoute>
           <AppLayout>
@@ -140,7 +159,7 @@ function AppWithAuth() {
           </AppLayout>
         </ProtectedRoute>
       } />
-      
+
       <Route path="/test/:testId" element={
         <ProtectedRoute>
           <AppLayout>
@@ -148,7 +167,15 @@ function AppWithAuth() {
           </AppLayout>
         </ProtectedRoute>
       } />
-      
+
+      <Route path="/review/:attemptId" element={
+        <ProtectedRoute>
+          <AppLayout>
+            <ReviewAttempt />
+          </AppLayout>
+        </ProtectedRoute>
+      } />
+
       <Route path="/health" element={
         <ProtectedRoute>
           <AppLayout>

@@ -1,6 +1,6 @@
 import { auth } from '../firebase';
 
-// Updated to match the backend port (3000 as seen in config.ts)
+// The backend runs on port 4000 as specified in config.ts
 const API_URL = 'http://localhost:4000/api';
 
 interface ApiResponse<T> {

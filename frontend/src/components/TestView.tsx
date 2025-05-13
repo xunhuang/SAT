@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { SATQuestion } from '../services/api';
+import { saveTestAttempt } from '../services/testAttemptService';
+import { useAuth } from '../components/AuthProvider';
 import './TestView.css';
 
 interface TestViewProps {
@@ -15,7 +17,9 @@ interface TestViewProps {
 const TestView = ({ tests }: TestViewProps) => {
   const { testId } = useParams<{ testId: string }>();
   const navigate = useNavigate();
+  const { currentUser } = useAuth(); // Get the current authenticated user
   
+  // State for test data
   const [currentTest, setCurrentTest] = useState<typeof tests[0] | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
@@ -23,23 +27,138 @@ const TestView = ({ tests }: TestViewProps) => {
   const [reviewMode, setReviewMode] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
 
-  // Find the test on component mount
+  // State for loading and errors
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const directLoadAttempted = useRef(false);
+
+  // State for saving attempts
+  const [attemptSaved, setAttemptSaved] = useState(false);
+  const [attemptId, setAttemptId] = useState<string | null>(null);
+  const [savingAttempt, setSavingAttempt] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Log when the component mounts
   useEffect(() => {
-    const test = tests.find(t => t.id === testId);
-    if (test) {
-      setCurrentTest(test);
-      // Reset other state when test changes
+    console.log('[TestView] Component mounted');
+    return () => {
+      console.log('[TestView] Component unmounted');
+    };
+  }, []);
+
+  // Direct test loading function using Firestore
+  const loadTestDirectly = async (testId: string, userId: string) => {
+    try {
+      console.log('[TestView] Directly loading test from Firestore:', testId);
+
+      // Import here to avoid circular dependencies
+      const { doc, getDoc } = await import('firebase/firestore');
+      const { db } = await import('../firebase');
+
+      // Get the test document directly from Firestore
+      const testDoc = await getDoc(doc(db, 'tests', testId));
+
+      if (!testDoc.exists()) {
+        console.error('[TestView] Test document not found in Firestore');
+        setErrorMessage('Test not found in database. It may have been deleted.');
+        return false;
+      }
+
+      const data = testDoc.data();
+
+      // Check if the test belongs to the current user
+      if (data.userId !== userId) {
+        console.error('[TestView] Test belongs to a different user');
+        setErrorMessage('You do not have permission to view this test.');
+        return false;
+      }
+
+      // Convert to Test object
+      const testData = {
+        id: testDoc.id,
+        name: data.name,
+        questions: data.questions,
+        createdAt: data.createdAt.toDate()
+      };
+
+      console.log('[TestView] Successfully loaded test from Firestore:', testData.name);
+
+      // Validate questions
+      if (!testData.questions || !Array.isArray(testData.questions) || testData.questions.length === 0) {
+        console.error('[TestView] Test has no valid questions:', testData);
+        setErrorMessage('This test has no questions. Please try another test.');
+        return false;
+      }
+
+      // Set test data
+      setCurrentTest(testData);
       setCurrentQuestionIndex(0);
       setUserAnswers({});
       setShowResults(false);
       setReviewMode(false);
-      // Set initial time - 1 minute per question
-      setTimeRemaining(test.questions.length * 60);
-    } else {
-      // Test not found, navigate back to the test list
-      navigate('/');
+      setTimeRemaining(testData.questions.length * 60);
+
+      return true;
+    } catch (error) {
+      console.error('[TestView] Error loading test directly:', error);
+      setErrorMessage('Failed to load test data. Please try again.');
+      return false;
     }
-  }, [testId, tests, navigate]);
+  };
+
+  // Find the test on component mount or when tests change
+  useEffect(() => {
+    const loadTest = async () => {
+      console.log('[TestView] Finding test with testId:', testId);
+      console.log('[TestView] Available tests from props:', tests);
+      console.log('[TestView] Tests array length:', tests.length);
+
+      if (!testId) {
+        console.error('[TestView] No testId provided');
+        setErrorMessage('No test ID provided');
+        return;
+      }
+
+      // First try to find the test in the provided tests array
+      if (tests && tests.length > 0) {
+        const test = tests.find(t => t.id === testId);
+
+        if (test) {
+          console.log('[TestView] Test found in props:', test.name);
+
+          // Validate questions
+          if (!test.questions || !Array.isArray(test.questions) || test.questions.length === 0) {
+            console.error('[TestView] Test from props has no questions:', test);
+            setErrorMessage('This test has no questions. Please try another test.');
+            return;
+          }
+
+          // Set test data
+          setCurrentTest(test);
+          setCurrentQuestionIndex(0);
+          setUserAnswers({});
+          setShowResults(false);
+          setReviewMode(false);
+          setTimeRemaining(test.questions.length * 60);
+          return;
+        }
+      }
+
+      // If we didn't find the test in props, or if the tests array is empty,
+      // try to load it directly from Firestore (but only once)
+      if (!directLoadAttempted.current && currentUser) {
+        console.log('[TestView] Test not found in props, loading directly from Firestore');
+        directLoadAttempted.current = true; // Mark as attempted
+        await loadTestDirectly(testId, currentUser.uid);
+      } else if (!directLoadAttempted.current) {
+        console.error('[TestView] No current user to load test for');
+        setErrorMessage('You must be logged in to view this test.');
+        directLoadAttempted.current = true; // Mark as attempted
+      }
+    };
+
+    loadTest();
+  }, [testId, tests, currentUser]);
 
   // Timer effect
   useEffect(() => {
@@ -66,12 +185,65 @@ const TestView = ({ tests }: TestViewProps) => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // No test found
+  // Set up loading timeout
+
+  // Set loading state when component mounts and handle timeouts
+  useEffect(() => {
+    console.log('[TestView] Setting up initial loading state');
+    // Allow some time for test data to be loaded
+    const timer = setTimeout(() => {
+      console.log('[TestView] Initial loading period complete');
+      setInitialLoading(false);
+
+      // If we still don't have a test after the loading period, set an error
+      if (!currentTest && tests.length > 0) {
+        console.error('[TestView] Test not loaded after timeout');
+        setErrorMessage('Unable to load the requested test. It may no longer exist.');
+      }
+    }, 2000); // Give more time for data to load
+
+    return () => clearTimeout(timer);
+  }, [currentTest, tests]);
+
+  // Show a big debug button in development
+  const showDebugInfo = () => {
+    console.log('=== DEBUG INFO ===');
+    console.log('Tests available:', tests);
+    console.log('Current test ID:', testId);
+    console.log('Current test:', currentTest);
+    console.log('Initial loading:', initialLoading);
+    console.log('Error message:', errorMessage);
+    alert('Debug info logged to console');
+  };
+
+  // If we're still in the initial loading period or tests haven't loaded yet
+  if (initialLoading || (tests.length === 0 && !errorMessage)) {
+    return (
+      <div className="test-loading">
+        <h2>Loading test...</h2>
+        <div className="spinner"></div>
+        <p>Please wait while we prepare your practice test.</p>
+        <div className="debug-section">
+          <button className="debug-button" onClick={showDebugInfo}>
+            Debug Info
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // If there's an error or no test found after loading
   if (!currentTest) {
     return (
       <div className="test-not-found">
         <h2>Test not found</h2>
+        <p>{errorMessage || 'The requested test could not be found. Please try again or choose another test.'}</p>
         <button onClick={() => navigate('/')}>Back to Test List</button>
+        <div className="debug-section">
+          <button className="debug-button" onClick={showDebugInfo}>
+            Debug Info
+          </button>
+        </div>
       </div>
     );
   }
@@ -143,11 +315,42 @@ const TestView = ({ tests }: TestViewProps) => {
     }
   };
 
+  // Submit test function
+
   // Submit the test
-  const submitTest = () => {
+  const submitTest = async () => {
     setShowResults(true);
     // Reset to first question to show results page
     setCurrentQuestionIndex(0);
+
+    // Save the test attempt if user is logged in and attempt hasn't been saved yet
+    if (currentUser && currentTest && !attemptSaved) {
+      try {
+        setSavingAttempt(true);
+        setSaveError(null);
+
+        // Calculate score
+        const { score } = calculateScore();
+
+        // Save the attempt
+        const savedAttemptId = await saveTestAttempt(
+          currentUser.uid,
+          currentTest,
+          userAnswers,
+          score
+        );
+
+        // Mark as saved
+        setAttemptSaved(true);
+        setAttemptId(savedAttemptId);
+        console.log('Test attempt saved with ID:', savedAttemptId);
+      } catch (error) {
+        console.error('Error saving test attempt:', error);
+        setSaveError('There was an error saving your results. Your progress may not be recorded.');
+      } finally {
+        setSavingAttempt(false);
+      }
+    }
   };
 
   // Calculate score
@@ -183,6 +386,21 @@ const TestView = ({ tests }: TestViewProps) => {
           </div>
           <p className="score-text">You got {score} out of {total} questions correct</p>
         </div>
+
+        {/* Show saving status */}
+        {currentUser && (
+          <div className="save-status">
+            {savingAttempt && (
+              <p className="saving-message">Saving your results...</p>
+            )}
+            {attemptSaved && (
+              <p className="saved-message">Your results have been saved!</p>
+            )}
+            {saveError && (
+              <p className="save-error">{saveError}</p>
+            )}
+          </div>
+        )}
 
         <div className="results-actions">
           <button
