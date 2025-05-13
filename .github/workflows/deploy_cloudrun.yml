@@ -44,7 +44,7 @@ jobs:
           # firebase deploy --token "${{ secrets.FIREBASE_TOKEN }}"
 
       - name: Install dependencies
-        run: cd webapp ; npm install
+        run: cd backend ; npm install
 
       - name: Deploy backend
         run: |
