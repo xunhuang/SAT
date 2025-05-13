@@ -1,6 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from './AuthProvider';
-import { getUserSettings, saveUserSettings, DEFAULT_SETTINGS } from '../services/userSettingsService';
+import {
+  getUserSettings,
+  saveUserSettings,
+  DEFAULT_SETTINGS,
+  UserSettings,
+} from "../services/userSettingsService";
 import eventBus, { EVENTS } from '../services/eventBus';
 import './ProfileSettings.css';
 
@@ -124,7 +129,9 @@ const ProfileSettings: React.FC = () => {
   const removeEmail = (email: string) => {
     setSettings({
       ...settings,
-      notificationEmails: settings.notificationEmails.filter(e => e !== email)
+      notificationEmails: settings.notificationEmails.filter(
+        (e: string) => e !== email
+      ),
     });
   };
 
@@ -139,8 +146,11 @@ const ProfileSettings: React.FC = () => {
         onClick={() => setIsOpen(!isOpen)}
         title="Profile Settings"
       >
-        <div className="profile-avatar" style={{ backgroundColor: avatarColor }}>
-          {currentUser.email ? currentUser.email.charAt(0).toUpperCase() : '?'}
+        <div
+          className="profile-avatar"
+          style={{ backgroundColor: avatarColor }}
+        >
+          {currentUser.email ? currentUser.email.charAt(0).toUpperCase() : "?"}
         </div>
       </button>
 
@@ -149,8 +159,13 @@ const ProfileSettings: React.FC = () => {
           <div className="profile-header">
             <h3>Profile Settings</h3>
             <div className="user-info">
-              <div className="profile-avatar-large" style={{ backgroundColor: avatarColor }}>
-                {currentUser.email ? currentUser.email.charAt(0).toUpperCase() : '?'}
+              <div
+                className="profile-avatar-large"
+                style={{ backgroundColor: avatarColor }}
+              >
+                {currentUser.email
+                  ? currentUser.email.charAt(0).toUpperCase()
+                  : "?"}
               </div>
               <div className="user-details">
                 <p className="user-name">{currentUser.displayName}</p>
@@ -161,7 +176,7 @@ const ProfileSettings: React.FC = () => {
 
           <div className="settings-section">
             <h4>Test Settings</h4>
-            
+
             <div className="setting-item">
               <label htmlFor="questionCount">Default Questions Per Test:</label>
               <input
@@ -170,13 +185,18 @@ const ProfileSettings: React.FC = () => {
                 min="1"
                 max="50"
                 value={settings.defaultQuestionCount}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  defaultQuestionCount: Math.max(1, Math.min(50, parseInt(e.target.value) || 10))
-                })}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    defaultQuestionCount: Math.max(
+                      1,
+                      Math.min(50, parseInt(e.target.value) || 10)
+                    ),
+                  })
+                }
               />
             </div>
-            
+
             <div className="setting-item">
               <label htmlFor="timePerQuestion">Seconds Per Question:</label>
               <input
@@ -185,10 +205,15 @@ const ProfileSettings: React.FC = () => {
                 min="10"
                 max="300"
                 value={settings.secondsPerQuestion}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  secondsPerQuestion: Math.max(10, Math.min(300, parseInt(e.target.value) || 60))
-                })}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    secondsPerQuestion: Math.max(
+                      10,
+                      Math.min(300, parseInt(e.target.value) || 60)
+                    ),
+                  })
+                }
               />
             </div>
           </div>
@@ -198,31 +223,28 @@ const ProfileSettings: React.FC = () => {
             <p className="notification-description">
               Test results will be sent to these email addresses
             </p>
-            
+
             <div className="email-input-container">
               <input
                 type="email"
                 placeholder="Add email address"
                 value={newEmail}
                 onChange={(e) => setNewEmail(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && addEmail()}
+                onKeyPress={(e) => e.key === "Enter" && addEmail()}
               />
-              <button 
-                className="add-email-button"
-                onClick={addEmail}
-              >
+              <button className="add-email-button" onClick={addEmail}>
                 Add
               </button>
             </div>
-            
+
             <div className="email-list">
               {settings.notificationEmails.length === 0 ? (
                 <p className="no-emails">No notification emails added</p>
               ) : (
-                settings.notificationEmails.map(email => (
+                settings.notificationEmails.map((email: string) => (
                   <div key={email} className="email-item">
                     <span>{email}</span>
-                    <button 
+                    <button
                       className="remove-email-button"
                       onClick={() => removeEmail(email)}
                     >
@@ -240,17 +262,14 @@ const ProfileSettings: React.FC = () => {
                 {saveMessage.text}
               </p>
             )}
-            <button 
+            <button
               className="save-settings-button"
               onClick={saveSettings}
               disabled={isSaving}
             >
-              {isSaving ? 'Saving...' : 'Save Settings'}
+              {isSaving ? "Saving..." : "Save Settings"}
             </button>
-            <button 
-              className="sign-out-button"
-              onClick={signOut}
-            >
+            <button className="sign-out-button" onClick={signOut}>
               Sign Out
             </button>
           </div>
