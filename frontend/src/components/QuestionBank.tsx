@@ -1,22 +1,38 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './AuthProvider';
 import { getQuestionBankCount, populateQuestionBank } from '../services/api';
+import { useLocation } from 'react-router-dom';
 import './QuestionBank.css';
 
 const QuestionBank = () => {
   const { currentUser } = useAuth();
+  const location = useLocation();
   const [questionCount, setQuestionCount] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isPopulating, setIsPopulating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [lastRefresh, setLastRefresh] = useState<number>(Date.now());
 
-  // Load question count when component mounts
+  // Load question count when component mounts or when navigating back to this page
   useEffect(() => {
     if (currentUser) {
       loadQuestionCount();
     }
-  }, [currentUser]);
+    
+    // Set up a timer to clear success/error messages after 5 seconds
+    const messageTimer = setTimeout(() => {
+      setError(null);
+      setSuccessMessage(null);
+    }, 5000);
+    
+    return () => clearTimeout(messageTimer);
+  }, [currentUser, location.pathname, lastRefresh]);
+  
+  // Function to force refresh data
+  const refreshData = () => {
+    setLastRefresh(Date.now());
+  };
 
   // Load the number of questions in the bank
   const loadQuestionCount = async () => {
@@ -109,6 +125,18 @@ const QuestionBank = () => {
           Question Bank
           <span className="question-count">
             Questions available: <span className="question-count-number">{questionCount || 0}</span>
+            <button 
+              className="refresh-button" 
+              onClick={refreshData} 
+              title="Refresh question count"
+              aria-label="Refresh question count"
+            >
+              <span className={`refresh-icon ${isLoading ? 'spinning' : ''}`}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                </svg>
+              </span>
+            </button>
           </span>
         </h2>
       </div>
@@ -119,6 +147,10 @@ const QuestionBank = () => {
           <p>
             The Question Bank allows you to store SAT practice questions for use in your tests.
             A larger bank gives you more variety in your practice tests and helps avoid repetition.
+          </p>
+          <p>
+            <strong>Note:</strong> Questions are removed from your bank after they are used in a test.
+            This ensures you always get fresh questions and prevents repeats.
           </p>
           <p>
             Click the "Populate Bank" button to add all available questions to your bank.

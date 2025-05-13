@@ -10,6 +10,8 @@ interface Test {
   questions: any[];
   userId: string;
   createdAt: any; // Firestore timestamp
+  questionsFromBank?: boolean; // Flag to indicate if questions came from bank
+  bankQuestionIds?: string[]; // IDs of questions to remove from bank
 }
 
 /**
@@ -28,6 +30,10 @@ export default {
     try {
       let questions = [];
 
+      // Variables to track question bank usage
+      let questionsFromBank = false;
+      let bankQuestionIds: string[] = [];
+      
       // Try to get questions from the user's question bank first
       try {
         // Check if user has a question bank with enough questions
@@ -37,6 +43,10 @@ export default {
           // User has enough questions in their bank
           console.log(`Using ${numQuestions} questions from user's question bank`);
           questions = await questionBankService.getRandomQuestionsFromBank(userId, numQuestions);
+          
+          // Track questions from the bank
+          questionsFromBank = true;
+          bankQuestionIds = questions.map(q => q.externalid);
         } else {
           // Not enough questions in bank, fall back to system questions
           console.log(`Not enough questions in bank (${bankCount}), falling back to system questions`);
@@ -70,11 +80,24 @@ export default {
         name: testName,
         questions,
         userId,
-        createdAt: getFirebaseAdmin().firestore.FieldValue.serverTimestamp()
+        createdAt: getFirebaseAdmin().firestore.FieldValue.serverTimestamp(),
+        questionsFromBank,
+        bankQuestionIds
       };
       
       // Save to Firestore
       await this.saveTestToFirestore(test);
+      
+      // If questions came from bank, remove them to prevent reuse
+      if (questionsFromBank && bankQuestionIds.length > 0) {
+        try {
+          console.log(`Removing ${bankQuestionIds.length} questions from bank for user ${userId}`);
+          await questionBankService.removeQuestionsFromBank(userId, bankQuestionIds);
+        } catch (removeError) {
+          console.error('Error removing questions from bank:', removeError);
+          // Continue even if removal fails - test was still created successfully
+        }
+      }
       
       return testId;
     } catch (error) {

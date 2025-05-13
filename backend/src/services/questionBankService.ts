@@ -8,6 +8,51 @@ import { SATQuestion } from './questionService';
  */
 export default {
   /**
+   * Remove questions from a user's bank
+   * @param userId User ID
+   * @param questionIds Array of question IDs to remove
+   * @returns Promise<number> Number of questions removed
+   */
+  async removeQuestionsFromBank(userId: string, questionIds: string[]): Promise<number> {
+    try {
+      if (!questionIds || questionIds.length === 0) {
+        return 0;
+      }
+      
+      const db = getFirebaseAdmin().firestore();
+      const batchSize = 500; // Firestore has a limit of 500 operations per batch
+      let totalRemoved = 0;
+      
+      // Process questions in batches
+      for (let i = 0; i < questionIds.length; i += batchSize) {
+        const batch = db.batch();
+        const currentBatch = questionIds.slice(i, i + batchSize);
+        
+        // Add each question to the batch
+        for (const questionId of currentBatch) {
+          const ref = db.collection('questionBanks')
+            .doc(userId)
+            .collection('questions')
+            .doc(questionId);
+          
+          batch.delete(ref);
+        }
+        
+        // Commit the batch
+        await batch.commit();
+        totalRemoved += currentBatch.length;
+        
+        console.log(`Removed batch of ${currentBatch.length} questions, total so far: ${totalRemoved}`);
+      }
+      
+      console.log(`Successfully removed ${totalRemoved} questions from bank for user ${userId}`);
+      return totalRemoved;
+    } catch (error) {
+      console.error('Error removing questions from bank:', error);
+      throw new Error('Failed to remove questions from bank');
+    }
+  },
+  /**
    * Get the number of questions in a user's bank
    * @param userId User ID
    * @returns Promise<number> Number of questions in the bank

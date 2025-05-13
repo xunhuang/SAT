@@ -33,6 +33,43 @@
   color: #2c6ecf;
 }
 
+.refresh-button {
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  margin-left: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+}
+
+.refresh-button:hover {
+  background-color: #e0e0e0;
+}
+
+.refresh-button svg {
+  width: 18px;
+  height: 18px;
+  fill: #555;
+}
+
+.refresh-icon {
+  display: inline-block;
+}
+
+.refresh-icon.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .question-bank-actions {
   display: flex;
   margin-bottom: 20px;
