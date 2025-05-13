@@ -2,6 +2,7 @@ import express from 'express';
 import healthRoutes from './healthRoutes';
 import questionRoutes from './questionRoutes';
 import testRoutes from './testRoutes';
+import questionBankRoutes from './questionBankRoutes';
 // Import other route files here as the application grows
 
 const router = express.Router();
@@ -14,6 +15,9 @@ router.use('/questions', questionRoutes);
 
 // Test routes
 router.use('/tests', testRoutes);
+
+// Question Bank routes
+router.use('/question-bank', questionBankRoutes);
 
 // Add other routes here
 // router.use('/auth', authRoutes);

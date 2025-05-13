@@ -1,0 +1,160 @@
+.question-bank-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.question-bank-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.question-bank-title {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #333;
+}
+
+.question-count {
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  background-color: #f5f5f5;
+  padding: 8px 16px;
+  border-radius: 20px;
+  margin-left: 15px;
+}
+
+.question-count-number {
+  font-weight: bold;
+  margin-left: 5px;
+  color: #2c6ecf;
+}
+
+.question-bank-actions {
+  display: flex;
+  margin-bottom: 20px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.info-block {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.info-block h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.info-block p {
+  color: #666;
+  line-height: 1.5;
+}
+
+.action-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-width: 200px;
+}
+
+.populate-button {
+  padding: 10px 20px;
+  background-color: #2c6ecf;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+.populate-button:hover {
+  background-color: #1f5bb6;
+}
+
+.populate-button:disabled {
+  background-color: #a0a0a0;
+  cursor: not-allowed;
+}
+
+.bank-status {
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.bank-stats {
+  display: flex;
+  margin-top: 20px;
+}
+
+.stat-card {
+  flex: 1;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  text-align: center;
+  margin-right: 15px;
+}
+
+.stat-card:last-child {
+  margin-right: 0;
+}
+
+.stat-card h4 {
+  margin: 0 0 10px 0;
+  color: #555;
+  font-size: 1rem;
+}
+
+.stat-card .stat-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #2c6ecf;
+}
+
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.loading-indicator svg {
+  animation: spin 1s linear infinite;
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.success-message {
+  color: #2e7d32;
+  background-color: #e8f5e9;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+}

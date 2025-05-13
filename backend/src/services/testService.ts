@@ -1,5 +1,6 @@
 import { getFirebaseAdmin } from '../config/firebase';
 import questionService from './questionService';
+import questionBankService from './questionBankService';
 import { v4 as uuidv4 } from 'uuid';
 
 // Define Test type
@@ -25,19 +26,40 @@ export default {
    */
   async generateTest(userId: string, testName: string, numQuestions: number): Promise<string> {
     try {
-      // Get random questions for the test
-      const allIds = await questionService.getAllQuestionIds();
-      const totalAvailable = allIds.length;
-      
-      // Make sure we don't request more questions than available
-      const actualNumQuestions = Math.min(numQuestions, totalAvailable);
-      
-      // Randomly select question IDs
-      const selectedIds = this.getRandomElements(allIds, actualNumQuestions);
-      
-      // Fetch full question data for each selected ID
-      const questionPromises = selectedIds.map(id => questionService.getQuestionById(id));
-      const questions = await Promise.all(questionPromises);
+      let questions = [];
+
+      // Try to get questions from the user's question bank first
+      try {
+        // Check if user has a question bank with enough questions
+        const bankCount = await questionBankService.getBankQuestionCount(userId);
+
+        if (bankCount >= numQuestions) {
+          // User has enough questions in their bank
+          console.log(`Using ${numQuestions} questions from user's question bank`);
+          questions = await questionBankService.getRandomQuestionsFromBank(userId, numQuestions);
+        } else {
+          // Not enough questions in bank, fall back to system questions
+          console.log(`Not enough questions in bank (${bankCount}), falling back to system questions`);
+          throw new Error('Not enough questions in bank');
+        }
+      } catch (bankError: any) {
+        // Fallback to system questions if bank retrieval fails or not enough questions
+        console.log('Falling back to system questions:', bankError.message);
+
+        // Get random questions for the test from the system
+        const allIds = await questionService.getAllQuestionIds();
+        const totalAvailable = allIds.length;
+
+        // Make sure we don't request more questions than available
+        const actualNumQuestions = Math.min(numQuestions, totalAvailable);
+
+        // Randomly select question IDs
+        const selectedIds = this.getRandomElements(allIds, actualNumQuestions);
+
+        // Fetch full question data for each selected ID
+        const questionPromises = selectedIds.map(id => questionService.getQuestionById(id));
+        questions = await Promise.all(questionPromises);
+      }
       
       // Generate a unique ID for the test
       const testId = uuidv4();

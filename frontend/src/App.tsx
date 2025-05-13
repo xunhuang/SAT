@@ -10,6 +10,7 @@ import RetakeTest from './components/RetakeTest';
 import ApiHealth from './components/ApiHealth';
 import Login from './components/Login';
 import ProfileSettings from './components/ProfileSettings';
+import QuestionBank from './components/QuestionBank';
 
 // Define Test type for the app
 export interface Test {
@@ -49,6 +50,7 @@ const AppLayout = ({ children }: { children: JSX.Element }) => {
           {currentUser && (
             <>
               <Link to="/" className="nav-link">Tests</Link>
+              <Link to="/question-bank" className="nav-link">Question Bank</Link>
               <Link to="/health" className="nav-link">API Status</Link>
               <div className="user-info">
                 <ProfileSettings />
@@ -208,6 +210,14 @@ function AppWithAuth() {
         <ProtectedRoute>
           <AppLayout>
             <ApiHealth />
+          </AppLayout>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/question-bank" element={
+        <ProtectedRoute>
+          <AppLayout>
+            <QuestionBank />
           </AppLayout>
         </ProtectedRoute>
       } />

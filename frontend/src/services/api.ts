@@ -119,6 +119,32 @@ export const generateTest = async (
   });
 };
 
+/**
+ * Get count of questions in a user's bank
+ */
+export const getQuestionBankCount = async (userId: string): Promise<ApiResponse<{count: number}>> => {
+  return apiRequest<{count: number}>(`/question-bank/count/${userId}`);
+};
+
+/**
+ * Get all questions in a user's bank
+ */
+export const getQuestionBankQuestions = async (userId: string): Promise<ApiResponse<{questions: SATQuestion[], count: number}>> => {
+  return apiRequest<{questions: SATQuestion[], count: number}>(`/question-bank/${userId}`);
+};
+
+/**
+ * Populate a user's question bank with all available questions
+ */
+export const populateQuestionBank = async (userId: string): Promise<ApiResponse<{message: string, count: number}>> => {
+  return apiRequest<{message: string, count: number}>('/question-bank/populate', {
+    method: 'POST',
+    body: JSON.stringify({
+      userId
+    })
+  });
+};
+
 export default {
   apiRequest,
   checkApiHealth,
@@ -127,4 +153,7 @@ export default {
   getRandomQuestion,
   getQuestionIds,
   generateTest,
+  getQuestionBankCount,
+  getQuestionBankQuestions,
+  populateQuestionBank,
 };
