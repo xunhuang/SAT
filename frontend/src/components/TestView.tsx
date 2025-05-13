@@ -485,6 +485,7 @@ const TestView = ({ tests }: TestViewProps) => {
                   >
                     <span className="option-letter">{String.fromCharCode(65 + index)}</span>
                     <div
+                      className="option-content"
                       dangerouslySetInnerHTML={{ __html: option.content }}
                     />
 

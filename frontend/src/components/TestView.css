@@ -66,6 +66,7 @@
   background-color: #ffffff;
   cursor: pointer;
   transition: all 0.2s ease;
+  align-items: center; /* Align at the center */
 }
 
 .answer-option:hover:not(.correct):not(.incorrect) {
@@ -161,13 +162,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
+  min-width: 30px;
   height: 30px;
   background-color: #e1e8ed;
   border-radius: 50%;
   margin-right: 15px;
   font-weight: bold;
   color: #34495e;
+  flex-shrink: 0; /* Prevent the letter from shrinking */
+}
+
+.option-content {
+  flex: 1;
+  text-align: left;
+  align-self: center; /* Center with the option letter */
 }
 
 .question-explanation {
