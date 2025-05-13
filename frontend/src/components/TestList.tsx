@@ -146,8 +146,6 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
 
   return (
     <div className="test-list-container">
-      <h1>SAT Practice Tests</h1>
-
       {/* Main test actions */}
       <div className="test-actions">
         {isCreatingTest ? (
@@ -160,18 +158,18 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
               className="test-name-input"
             />
             <div className="form-buttons">
-              <button 
+              <button
                 className="create-button"
                 onClick={createNewTest}
                 disabled={loading}
               >
-                {loading ? 'Creating...' : 'Create Test'}
+                {loading ? "Creating..." : "Create Test"}
               </button>
-              <button 
+              <button
                 className="cancel-button"
                 onClick={() => {
                   setIsCreatingTest(false);
-                  setNewTestName('');
+                  setNewTestName("");
                 }}
                 disabled={loading}
               >
@@ -181,7 +179,7 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
             {error && <p className="error-message">{error}</p>}
           </div>
         ) : (
-          <button 
+          <button
             className="add-test-button"
             onClick={() => setIsCreatingTest(true)}
           >
@@ -196,9 +194,11 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
         {isLoadingTests ? (
           <div className="test-loader">
             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"
-                    opacity=".25"/>
-              <path d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z"/>
+              <path
+                d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"
+                opacity=".25"
+              />
+              <path d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z" />
             </svg>
             <p>Loading your tests...</p>
           </div>
@@ -209,7 +209,7 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
           </div>
         ) : (
           <div className="tests-grid">
-            {tests.map(test => (
+            {tests.map((test) => (
               <div key={test.id} className="test-card">
                 <div className="test-card-header">
                   <h2>{test.name}</h2>
@@ -222,14 +222,24 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
                   </button>
                 </div>
                 <div className="test-card-body">
-                  <p className="question-count">{test.questions.length} Questions</p>
-                  <p className="created-date">Created: {formatDate(test.createdAt)}</p>
+                  <p className="question-count">
+                    {test.questions.length} Questions
+                  </p>
+                  <p className="created-date">
+                    Created: {formatDate(test.createdAt)}
+                  </p>
                 </div>
                 <div className="test-card-footer">
                   <Link
                     to={`/test/${test.id}`}
                     className="start-test-button"
-                    onClick={() => console.log('[TestList] Starting test:', test.id, test.name)}
+                    onClick={() =>
+                      console.log(
+                        "[TestList] Starting test:",
+                        test.id,
+                        test.name
+                      )
+                    }
                   >
                     Start Practice
                   </Link>

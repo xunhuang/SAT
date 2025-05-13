@@ -79,7 +79,7 @@
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   text-align: center;
-  max-width: 600px;
+  max-width: 800px;
   margin: 0 auto;
 }
 
@@ -89,11 +89,63 @@
   font-size: 2rem;
 }
 
-.login-page p {
+.login-page > p {
   color: #7f8c8d;
   margin-bottom: 2rem;
   font-size: 1.1rem;
   line-height: 1.6;
+}
+
+/* Login benefits section */
+.login-benefits {
+  display: flex;
+  justify-content: space-between;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.benefit-item {
+  flex: 1;
+  min-width: 200px;
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.benefit-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.benefit-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.benefit-item h3 {
+  font-size: 1.2rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.benefit-item p {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+  line-height: 1.4;
+}
+
+.login-button-container {
+  margin-top: 2rem;
+}
+
+.login-button-container .login-button {
+  padding: 0.9rem 2.5rem;
+  font-size: 1.1rem;
 }
 
 .loading-screen {

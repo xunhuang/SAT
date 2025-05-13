@@ -49,14 +49,10 @@ const AppLayout = ({ children }: { children: JSX.Element }) => {
             <>
               <Link to="/" className="nav-link">Tests</Link>
               <Link to="/health" className="nav-link">API Status</Link>
+              <div className="user-info">
+                <ProfileSettings />
+              </div>
             </>
-          )}
-          {currentUser ? (
-            <div className="user-info">
-              <ProfileSettings />
-            </div>
-          ) : (
-            <Login isLoggedIn={false} userEmail={null} />
           )}
         </div>
       </div>
@@ -71,16 +67,35 @@ const AppLayout = ({ children }: { children: JSX.Element }) => {
 // Main login page
 const LoginPage = () => {
   const { currentUser } = useAuth();
-  
+
   if (currentUser) {
     return <Navigate to="/" />;
   }
-  
+
   return (
     <div className="login-page">
       <h2>Welcome to SAT Practice</h2>
-      <p>Please sign in with your Google account to access practice tests.</p>
-      <Login isLoggedIn={false} userEmail={null} />
+      <p>Sign in with your Google account to create and take practice tests.</p>
+      <div className="login-benefits">
+        <div className="benefit-item">
+          <span className="benefit-icon">📚</span>
+          <h3>Practice with Real SAT Questions</h3>
+          <p>Access a growing library of SAT-style questions to improve your skills</p>
+        </div>
+        <div className="benefit-item">
+          <span className="benefit-icon">📊</span>
+          <h3>Track Your Progress</h3>
+          <p>Review your test history and see how your performance improves over time</p>
+        </div>
+        <div className="benefit-item">
+          <span className="benefit-icon">⏱️</span>
+          <h3>Timed Practice</h3>
+          <p>Prepare for test day with timed sessions that simulate real testing conditions</p>
+        </div>
+      </div>
+      <div className="login-button-container">
+        <Login isLoggedIn={false} userEmail={null} />
+      </div>
     </div>
   );
 };
