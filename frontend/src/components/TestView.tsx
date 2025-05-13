@@ -20,6 +20,7 @@ const TestView = ({ tests }: TestViewProps) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
   const [showResults, setShowResults] = useState(false);
+  const [reviewMode, setReviewMode] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
 
   // Find the test on component mount
@@ -27,6 +28,11 @@ const TestView = ({ tests }: TestViewProps) => {
     const test = tests.find(t => t.id === testId);
     if (test) {
       setCurrentTest(test);
+      // Reset other state when test changes
+      setCurrentQuestionIndex(0);
+      setUserAnswers({});
+      setShowResults(false);
+      setReviewMode(false);
       // Set initial time - 1 minute per question
       setTimeRemaining(test.questions.length * 60);
     } else {
@@ -70,7 +76,30 @@ const TestView = ({ tests }: TestViewProps) => {
     );
   }
 
-  const currentQuestion = currentTest.questions[currentQuestionIndex];
+  // Make sure the current question index is valid
+  const safeQuestionIndex = Math.min(currentQuestionIndex, currentTest.questions.length - 1);
+  if (safeQuestionIndex !== currentQuestionIndex) {
+    setCurrentQuestionIndex(safeQuestionIndex);
+  }
+
+  // Get the current question safely
+  const currentQuestion = currentTest.questions[safeQuestionIndex];
+
+  // Safety check for missing question
+  if (!currentQuestion) {
+    console.error('Current question not found:', {
+      testId,
+      safeQuestionIndex,
+      questionsLength: currentTest.questions.length
+    });
+    return (
+      <div className="test-error">
+        <h2>Error Loading Question</h2>
+        <p>There was a problem loading the question.</p>
+        <button onClick={() => navigate('/')}>Back to Test List</button>
+      </div>
+    );
+  }
 
   // Handle answer selection
   const handleAnswerSelect = (questionId: string, answerId: string) => {
@@ -137,10 +166,12 @@ const TestView = ({ tests }: TestViewProps) => {
     };
   };
 
+  // Use review mode to control UI differences
+
   // Render test results
   const renderTestResults = () => {
     const { score, total, percentage } = calculateScore();
-    
+
     return (
       <div className="test-results">
         <h2>Test Results</h2>
@@ -150,17 +181,18 @@ const TestView = ({ tests }: TestViewProps) => {
           </div>
           <p className="score-text">You got {score} out of {total} questions correct</p>
         </div>
-        
+
         <div className="results-actions">
-          <button 
+          <button
             className="review-test-button"
             onClick={() => {
               setCurrentQuestionIndex(0);
+              setReviewMode(true);
             }}
           >
             Review Questions
           </button>
-          <button 
+          <button
             className="back-to-tests-button"
             onClick={() => navigate('/')}
           >
@@ -173,17 +205,25 @@ const TestView = ({ tests }: TestViewProps) => {
 
   return (
     <div className="test-view-container">
-      {showResults && currentQuestionIndex === 0 ? (
+      {showResults && currentQuestionIndex === 0 && !reviewMode ? (
         renderTestResults()
       ) : (
         <>
           <div className="test-header">
             <h2>{currentTest.name}</h2>
-            {timeRemaining !== null && !showResults && (
+
+            {reviewMode && (
+              <div className="review-badge">
+                Review Mode
+              </div>
+            )}
+
+            {timeRemaining !== null && !showResults && !reviewMode && (
               <div className="timer">
                 Time: {formatTime(timeRemaining)}
               </div>
             )}
+
             <div className="question-progress">
               Question {currentQuestionIndex + 1} of {currentTest.questions.length}
             </div>
@@ -203,24 +243,47 @@ const TestView = ({ tests }: TestViewProps) => {
             )}
             
             <div className="answer-options">
-              {currentQuestion.answerOptions.map((option, index) => (
-                <div 
-                  key={option.id} 
-                  className={`answer-option ${userAnswers[currentQuestion.externalid] === option.id ? 'selected' : ''} ${isCorrectAnswer(currentQuestion.externalid, option.id) ? 'correct' : ''} ${isIncorrectAnswer(currentQuestion.externalid, option.id) ? 'incorrect' : ''}`}
-                  onClick={() => handleAnswerSelect(currentQuestion.externalid, option.id)}
-                >
-                  <span className="option-letter">{String.fromCharCode(65 + index)}</span>
-                  <div 
-                    dangerouslySetInnerHTML={{ __html: option.content }}
-                  />
-                </div>
-              ))}
+              {currentQuestion.answerOptions.map((option, index) => {
+                // Determine if this option is the correct answer
+                const isCorrect = currentQuestion.keys.includes(option.id);
+
+                // Determine if this is the user's selected answer
+                const isSelected = userAnswers[currentQuestion.externalid] === option.id;
+
+                // For review mode or results, mark correct and incorrect answers
+                const showCorrectness = showResults || reviewMode;
+
+                return (
+                  <div
+                    key={option.id}
+                    className={`answer-option
+                      ${isSelected ? 'selected' : ''}
+                      ${showCorrectness && isCorrect ? 'correct' : ''}
+                      ${showCorrectness && isSelected && !isCorrect ? 'incorrect' : ''}
+                    `}
+                    onClick={() => !showResults && !reviewMode && handleAnswerSelect(currentQuestion.externalid, option.id)}
+                  >
+                    <span className="option-letter">{String.fromCharCode(65 + index)}</span>
+                    <div
+                      dangerouslySetInnerHTML={{ __html: option.content }}
+                    />
+
+                    {/* Show correct/incorrect indicators in review mode */}
+                    {showCorrectness && isCorrect && (
+                      <span className="correct-indicator">✓</span>
+                    )}
+                    {showCorrectness && isSelected && !isCorrect && (
+                      <span className="incorrect-indicator">✗</span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-            
-            {showResults && (
+
+            {(showResults || reviewMode) && (
               <div className="question-explanation">
                 <h3>Explanation</h3>
-                <div 
+                <div
                   className="explanation-content"
                   dangerouslySetInnerHTML={{ __html: currentQuestion.rationale || 'No explanation available.' }}
                 />
@@ -229,17 +292,38 @@ const TestView = ({ tests }: TestViewProps) => {
           </div>
           
           <div className="test-navigation">
-            <button 
+            <button
               className="nav-button prev"
               onClick={goToPrevQuestion}
               disabled={currentQuestionIndex === 0}
             >
               Previous
             </button>
-            
-            {currentQuestionIndex === currentTest.questions.length - 1 ? (
+
+            {reviewMode ? (
+              <div className="review-navigation">
+                {currentQuestionIndex === currentTest.questions.length - 1 ? (
+                  <button
+                    className="return-to-results-button"
+                    onClick={() => {
+                      setReviewMode(false);
+                      setCurrentQuestionIndex(0);
+                    }}
+                  >
+                    Return to Results
+                  </button>
+                ) : (
+                  <button
+                    className="nav-button next"
+                    onClick={goToNextQuestion}
+                  >
+                    Next
+                  </button>
+                )}
+              </div>
+            ) : currentQuestionIndex === currentTest.questions.length - 1 ? (
               !showResults ? (
-                <button 
+                <button
                   className="submit-button"
                   onClick={submitTest}
                   disabled={Object.keys(userAnswers).length < currentTest.questions.length}
@@ -247,7 +331,7 @@ const TestView = ({ tests }: TestViewProps) => {
                   Submit Test
                 </button>
               ) : (
-                <button 
+                <button
                   className="results-button"
                   onClick={() => {
                     setCurrentQuestionIndex(0);
@@ -257,7 +341,7 @@ const TestView = ({ tests }: TestViewProps) => {
                 </button>
               )
             ) : (
-              <button 
+              <button
                 className="nav-button next"
                 onClick={goToNextQuestion}
               >
