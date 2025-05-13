@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { SATQuestion } from '../services/api';
+import { SATQuestion, WrongAnswer } from '../services/api';
 import { saveTestAttempt } from '../services/testAttemptService';
 import { getUserSettings, DEFAULT_SETTINGS, sendTestAttemptNotifications } from '../services/userSettingsService';
 import { useAuth } from '../components/AuthProvider';
@@ -389,8 +389,8 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
         setSavingAttempt(true);
         setSaveError(null);
 
-        // Calculate score
-        const { score } = calculateScore();
+        // Calculate score and get wrong answers
+        const { score, wrongAnswers } = calculateScore();
 
         // Get time taken (either from timeRemaining or use total allowed time)
         const totalAllowedTime = currentTest.questions.length * (currentUser ? 
@@ -414,6 +414,7 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
 
         // Send email notification with test attempt details
         console.log('[TestView] Sending test attempt email notification');
+        console.log('[TestView] Including', wrongAnswers.length, 'wrong answers in email');
         const emailSent = await sendTestAttemptNotifications(
           currentUser.uid,
           savedAttemptId,
@@ -421,7 +422,8 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
           currentTest.name,
           score,
           currentTest.questions.length,
-          timeTaken
+          timeTaken,
+          wrongAnswers
         );
 
         if (emailSent) {
@@ -438,21 +440,40 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
     }
   };
 
-  // Calculate score
-  const calculateScore = (): { score: number, total: number, percentage: number } => {
+  // Calculate score and collect wrong answers
+  const calculateScore = (): { 
+    score: number, 
+    total: number, 
+    percentage: number,
+    wrongAnswers: WrongAnswer[] 
+  } => {
     let correctCount = 0;
+    const wrongAnswers: WrongAnswer[] = [];
     
     currentTest.questions.forEach(question => {
       const userAnswer = userAnswers[question.externalid];
+      
+      // Check if answer is correct
       if (userAnswer && question.keys.includes(userAnswer)) {
         correctCount++;
+      } else if (userAnswer) {
+        // If wrong answer, collect details for the email
+        wrongAnswers.push({
+          question: question.stem,
+          stimulus: question.stimulus || '',  // Include stimulus if available
+          options: question.answerOptions,
+          userAnswer: userAnswer,
+          correctAnswer: question.keys[0], // Use first correct answer
+          explanation: question.rationale || 'No explanation available.'
+        });
       }
     });
     
     return {
       score: correctCount,
       total: currentTest.questions.length,
-      percentage: Math.round((correctCount / currentTest.questions.length) * 100)
+      percentage: Math.round((correctCount / currentTest.questions.length) * 100),
+      wrongAnswers: wrongAnswers
     };
   };
 

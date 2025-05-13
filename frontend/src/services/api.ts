@@ -119,6 +119,16 @@ export const generateTest = async (
   });
 };
 
+// Interface for wrong answer in email notifications
+export interface WrongAnswer {
+  question: string;
+  stimulus?: string;  // Optional stimulus text
+  options: Array<{ id: string; content: string }>;
+  userAnswer: string;
+  correctAnswer: string;
+  explanation: string;
+}
+
 /**
  * Send test attempt completion email
  */
@@ -129,7 +139,8 @@ export const sendTestAttemptEmail = async (
   testName: string,
   score: number,
   totalQuestions: number,
-  timeTaken: number
+  timeTaken: number,
+  wrongAnswers?: WrongAnswer[]
 ): Promise<ApiResponse<{success: boolean, message: string}>> => {
   return apiRequest<{success: boolean, message: string}>('/email/test-attempt', {
     method: 'POST',
@@ -140,7 +151,8 @@ export const sendTestAttemptEmail = async (
       testName,
       score,
       totalQuestions,
-      timeTaken
+      timeTaken,
+      wrongAnswers
     })
   });
 };

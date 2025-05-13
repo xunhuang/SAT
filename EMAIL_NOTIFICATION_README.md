@@ -9,6 +9,13 @@ The system now sends email notifications when a user completes a test attempt. T
 - User's score (number correct and percentage)
 - Time taken to complete the test 
 - Links to review the test attempt and retake the test
+- Detailed breakdown of questions answered incorrectly, including:
+  - Question text (stem)
+  - Stimulus text (if available)
+  - All answer options labeled as A, B, C, D, etc.
+  - The user's selected answer (highlighted in red)
+  - The correct answer (highlighted in green)
+  - Explanation for each question
 
 ## Implementation Details
 

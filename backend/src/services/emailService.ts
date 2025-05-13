@@ -123,6 +123,7 @@ The SAT Practice Team
    * @param timeTaken Time taken in seconds
    * @param recipientEmail Primary recipient email
    * @param additionalEmails Additional notification emails (optional)
+   * @param wrongAnswers Details of wrong answers (optional)
    * @returns Promise<boolean> Success status
    */
   async sendTestAttemptEmail(
@@ -133,7 +134,15 @@ The SAT Practice Team
     totalQuestions: number,
     timeTaken: number, // in seconds
     recipientEmail: string,
-    additionalEmails: string[] = []
+    additionalEmails: string[] = [],
+    wrongAnswers: Array<{
+      question: string;
+      stimulus?: string;
+      options: Array<{ id: string; content: string }>;
+      userAnswer: string;
+      correctAnswer: string;
+      explanation: string;
+    }> = []
   ): Promise<boolean> {
     try {
       if (!isEmailConfigured()) {
@@ -162,6 +171,55 @@ The SAT Practice Team
       // URLs for review and retake
       const reviewUrl = `${BASE_URL}/review/${attemptId}`;
       const retakeUrl = `${BASE_URL}/retake/${testId}`;
+      
+      // Generate HTML for wrong answers section
+      let wrongAnswersHtml = '';
+      let wrongAnswersText = '';
+      
+      if (wrongAnswers && wrongAnswers.length > 0) {
+        wrongAnswersHtml = `
+        <div style="margin-top: 30px;">
+          <h3 style="color: #2c6ecf; border-bottom: 1px solid #eee; padding-bottom: 10px;">Questions You Missed</h3>
+          
+          ${wrongAnswers.map((item, index) => `
+            <div style="margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
+              <p style="font-weight: bold; margin-bottom: 10px;">Question ${index + 1}:</p>
+              <div style="margin-bottom: 15px;">${item.question}</div>
+              
+              ${item.stimulus ? `<div style="margin-bottom: 15px; font-style: italic; border-left: 2px solid #ddd; padding-left: 10px;">${item.stimulus}</div>` : ''}
+              
+              <div style="margin-bottom: 10px;">
+                ${item.options.map((option, optionIndex) => `
+                  <div style="
+                    margin-bottom: 5px; 
+                    padding: 8px; 
+                    background-color: ${option.id === item.correctAnswer ? '#e8f5e9' : option.id === item.userAnswer ? '#ffebee' : '#f5f5f5'}; 
+                    border-left: 3px solid ${option.id === item.correctAnswer ? '#4caf50' : option.id === item.userAnswer ? '#f44336' : '#ddd'};
+                  ">
+                    <strong>${String.fromCharCode(65 + optionIndex)}.</strong> ${option.content}
+                    ${option.id === item.correctAnswer ? ' <span style="color: #4caf50; font-weight: bold;">(Correct Answer)</span>' : ''}
+                    ${option.id === item.userAnswer ? ' <span style="color: #f44336; font-weight: bold;">(Your Answer)</span>' : ''}
+                  </div>
+                `).join('')}
+              </div>
+              
+              <div style="background-color: #f9f9f9; padding: 10px; border-left: 3px solid #2c6ecf; margin-top: 10px;">
+                <p style="font-weight: bold; margin-bottom: 5px; color: #2c6ecf;">Explanation:</p>
+                <div>${item.explanation || 'No explanation available.'}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        `;
+        
+        wrongAnswersText = '\n\nQuestions You Missed:\n\n' + 
+          wrongAnswers.map((item, index) => 
+            `Question ${index + 1}: ${item.question}\n` + 
+            `${item.stimulus ? 'Stimulus: ' + item.stimulus + '\n' : ''}` +
+            `${item.options.map((opt, i) => `${String.fromCharCode(65 + i)}. ${opt.content}${opt.id === item.userAnswer ? ' (Your Answer)' : ''}${opt.id === item.correctAnswer ? ' (Correct Answer)' : ''}`).join('\n')}\n` + 
+            `Explanation: ${item.explanation || 'No explanation available.'}\n`
+          ).join('\n');
+      }
 
       // Email content
       const mailOptions = {
@@ -179,7 +237,7 @@ Test Results:
 
 You can review your answers here: ${reviewUrl}
 Want to try again? Retake the test: ${retakeUrl}
-
+${wrongAnswersText}
 Keep practicing!
 
 The SAT Practice Team
@@ -212,6 +270,9 @@ The SAT Practice Team
       Retake Test
     </a>
   </div>
+  
+  ${wrongAnswersHtml}
+  
   <p style="color: #666; margin-top: 30px; font-size: 14px;">
     Keep practicing to improve your score!<br>
     The SAT Practice Team

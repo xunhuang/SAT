@@ -1,6 +1,6 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-import api from './api';
+import api, { WrongAnswer } from './api';
 
 export interface UserSettings {
   defaultQuestionCount: number;
@@ -65,7 +65,8 @@ export const sendTestAttemptNotifications = async (
   testName: string,
   score: number,
   totalQuestions: number,
-  timeTaken: number
+  timeTaken: number,
+  wrongAnswers?: WrongAnswer[]
 ): Promise<boolean> => {
   try {
     console.log('[userSettingsService] Sending test attempt notification email');
@@ -78,7 +79,8 @@ export const sendTestAttemptNotifications = async (
       testName,
       score,
       totalQuestions,
-      timeTaken
+      timeTaken,
+      wrongAnswers
     );
     
     if (response.error) {

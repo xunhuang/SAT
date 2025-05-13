@@ -20,7 +20,8 @@ export default {
         testName,
         score,
         totalQuestions,
-        timeTaken
+        timeTaken,
+        wrongAnswers
       } = req.body;
       
       // Input validation
@@ -67,7 +68,8 @@ export default {
         totalQuestions,
         timeTaken,
         userEmailInfo.email,
-        userEmailInfo.notificationEmails
+        userEmailInfo.notificationEmails,
+        wrongAnswers || []
       );
       
       if (emailSent) {
