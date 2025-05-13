@@ -9,6 +9,8 @@ This is the backend API for the SAT Practice application.
 - TypeScript support
 - Error handling middleware
 - Development and production configurations
+- Email notifications for test creation and completion
+- Question bank management
 
 ## Setup
 
@@ -62,6 +64,21 @@ npm start
 - `GET /api/health/ready` - Simple readiness check endpoint
 - `GET /` - Simple check that the API is running
 
+### Test Generation
+
+- `POST /api/tests/generate` - Generate a new test with questions from the question bank or system bank
+
+### Question Bank
+
+- `GET /api/question-bank/:userId` - Get a user's question bank
+- `POST /api/question-bank/:userId/populate` - Populate a user's question bank
+
+### Email Notifications
+
+- `POST /api/email/test-attempt` - Send email notification for completed test attempts
+
+See [API_DOCS.md](./API_DOCS.md) and [EMAIL_DOCS.md](./EMAIL_DOCS.md) for detailed API documentation.
+
 ## Project Structure
 
 ```
@@ -83,3 +100,4 @@ src/
 - Firebase Admin - Authentication and database
 - Morgan - HTTP request logger
 - dotenv - Environment variable management
+- Nodemailer - Email notifications

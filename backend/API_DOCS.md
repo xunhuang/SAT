@@ -183,6 +183,46 @@ Generates a new test with random SAT questions and persists it to Firestore.
 }
 ```
 
+### Email Endpoints
+
+#### Send Test Attempt Email
+
+```
+POST /email/test-attempt
+```
+
+Sends an email notification when a test attempt is completed, including test score, time taken, and links to review or retake the test.
+
+**Request Body:**
+```json
+{
+  "userId": "string",
+  "attemptId": "string",
+  "testId": "string",
+  "testName": "string",
+  "score": 8,
+  "totalQuestions": 10,
+  "timeTaken": 300
+}
+```
+
+**Parameters:**
+- `userId` (required): The user ID of the test taker
+- `attemptId` (required): The ID of the completed test attempt
+- `testId` (required): The ID of the test that was taken
+- `testName` (required): The name of the test
+- `score` (required): The number of correct answers
+- `totalQuestions` (required): The total number of questions in the test
+- `timeTaken` (required): The time taken to complete the test in seconds
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Test attempt email sent successfully"
+}
+```
+
 ## Error Handling
 
 All endpoints return standardized error responses:

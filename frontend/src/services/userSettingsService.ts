@@ -1,5 +1,6 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import api from './api';
 
 export interface UserSettings {
   defaultQuestionCount: number;
@@ -59,34 +60,36 @@ export const saveUserSettings = async (userId: string, settings: UserSettings): 
  */
 export const sendTestAttemptNotifications = async (
   userId: string,
+  attemptId: string,
   testId: string,
   testName: string,
   score: number,
-  totalQuestions: number
-): Promise<void> => {
+  totalQuestions: number,
+  timeTaken: number
+): Promise<boolean> => {
   try {
-    // Get user settings to find notification emails
-    const settings = await getUserSettings(userId);
+    console.log('[userSettingsService] Sending test attempt notification email');
     
-    if (!settings.notificationEmails || settings.notificationEmails.length === 0) {
-      console.log('No notification emails configured, skipping notifications');
-      return;
+    // Call the backend API endpoint to send the email
+    const response = await api.sendTestAttemptEmail(
+      userId,
+      attemptId,
+      testId,
+      testName,
+      score,
+      totalQuestions,
+      timeTaken
+    );
+    
+    if (response.error) {
+      console.error('[userSettingsService] Error sending test attempt email:', response.error);
+      return false;
     }
     
-    // This would be where you'd call a serverless function to send the emails
-    // For now, we'll just log the notification
-    console.log(`Would send test completion notification to: ${settings.notificationEmails.join(', ')}`);
-    console.log(`Test: ${testName}, Score: ${score}/${totalQuestions}`);
-    
-    // In a real implementation, you might do:
-    // await callServerlessFunction('sendTestNotifications', {
-    //   emails: settings.notificationEmails,
-    //   testName,
-    //   score,
-    //   totalQuestions,
-    //   userId
-    // });
+    console.log('[userSettingsService] Test attempt email sent successfully');
+    return true;
   } catch (error) {
-    console.error('Error sending test notifications:', error);
+    console.error('[userSettingsService] Error sending test attempt email:', error);
+    return false;
   }
 };

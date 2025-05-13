@@ -392,6 +392,13 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
         // Calculate score
         const { score } = calculateScore();
 
+        // Get time taken (either from timeRemaining or use total allowed time)
+        const totalAllowedTime = currentTest.questions.length * (currentUser ? 
+          await getUserSettings(currentUser.uid).then(settings => settings.secondsPerQuestion) : 
+          DEFAULT_SETTINGS.secondsPerQuestion
+        );
+        const timeTaken = timeRemaining !== null ? (totalAllowedTime - timeRemaining) : totalAllowedTime;
+
         // Save the attempt
         const savedAttemptId = await saveTestAttempt(
           currentUser.uid,
@@ -403,18 +410,27 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
         // Mark as saved
         setAttemptSaved(true);
         setAttemptId(savedAttemptId);
-        console.log('Test attempt saved with ID:', savedAttemptId);
+        console.log('[TestView] Test attempt saved with ID:', savedAttemptId);
 
-        // Send notifications to configured email addresses
-        await sendTestAttemptNotifications(
+        // Send email notification with test attempt details
+        console.log('[TestView] Sending test attempt email notification');
+        const emailSent = await sendTestAttemptNotifications(
           currentUser.uid,
+          savedAttemptId,
           currentTest.id,
           currentTest.name,
           score,
-          currentTest.questions.length
+          currentTest.questions.length,
+          timeTaken
         );
+
+        if (emailSent) {
+          console.log('[TestView] Test attempt email notification sent successfully');
+        } else {
+          console.warn('[TestView] Failed to send test attempt email notification');
+        }
       } catch (error) {
-        console.error('Error saving test attempt:', error);
+        console.error('[TestView] Error saving test attempt:', error);
         setSaveError('There was an error saving your results. Your progress may not be recorded.');
       } finally {
         setSavingAttempt(false);

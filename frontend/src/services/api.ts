@@ -120,6 +120,32 @@ export const generateTest = async (
 };
 
 /**
+ * Send test attempt completion email
+ */
+export const sendTestAttemptEmail = async (
+  userId: string,
+  attemptId: string,
+  testId: string,
+  testName: string,
+  score: number,
+  totalQuestions: number,
+  timeTaken: number
+): Promise<ApiResponse<{success: boolean, message: string}>> => {
+  return apiRequest<{success: boolean, message: string}>('/email/test-attempt', {
+    method: 'POST',
+    body: JSON.stringify({
+      userId,
+      attemptId,
+      testId,
+      testName,
+      score,
+      totalQuestions,
+      timeTaken
+    })
+  });
+};
+
+/**
  * Get count of questions in a user's bank
  */
 export const getQuestionBankCount = async (userId: string): Promise<ApiResponse<{count: number}>> => {
@@ -153,6 +179,7 @@ export default {
   getRandomQuestion,
   getQuestionIds,
   generateTest,
+  sendTestAttemptEmail,
   getQuestionBankCount,
   getQuestionBankQuestions,
   populateQuestionBank,

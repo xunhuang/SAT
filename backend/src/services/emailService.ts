@@ -112,4 +112,121 @@ The SAT Practice Team
       return false;
     }
   },
+
+  /**
+   * Send test attempt completion email
+   * @param attemptId Test attempt ID
+   * @param testId Test ID
+   * @param testName Test name
+   * @param score Score achieved
+   * @param totalQuestions Total number of questions
+   * @param timeTaken Time taken in seconds
+   * @param recipientEmail Primary recipient email
+   * @param additionalEmails Additional notification emails (optional)
+   * @returns Promise<boolean> Success status
+   */
+  async sendTestAttemptEmail(
+    attemptId: string,
+    testId: string,
+    testName: string,
+    score: number,
+    totalQuestions: number,
+    timeTaken: number, // in seconds
+    recipientEmail: string,
+    additionalEmails: string[] = []
+  ): Promise<boolean> {
+    try {
+      if (!isEmailConfigured()) {
+        console.warn('Email service not properly configured. Skipping notification.');
+        return false;
+      }
+
+      // Create a list of all recipients (removing duplicates)
+      const allRecipients = Array.from(
+        new Set([recipientEmail, ...additionalEmails].filter(Boolean))
+      );
+
+      if (allRecipients.length === 0) {
+        console.warn('No valid email recipients. Skipping notification.');
+        return false;
+      }
+
+      // Format time taken
+      const minutes = Math.floor(timeTaken / 60);
+      const seconds = timeTaken % 60;
+      const timeFormatted = `${minutes}m ${seconds}s`;
+
+      // Calculate percentage score
+      const percentage = Math.round((score / totalQuestions) * 100);
+
+      // URLs for review and retake
+      const reviewUrl = `${BASE_URL}/review/${attemptId}`;
+      const retakeUrl = `${BASE_URL}/retake/${testId}`;
+
+      // Email content
+      const mailOptions = {
+        from: `"SAT Practice" <${EMAIL_FROM}>`,
+        to: allRecipients.join(', '),
+        subject: `SAT Practice Test Results: ${testName}`,
+        text: `
+Hello,
+
+You have completed the SAT practice test "${testName}".
+
+Test Results:
+- Score: ${score}/${totalQuestions} (${percentage}%)
+- Time Taken: ${timeFormatted}
+
+You can review your answers here: ${reviewUrl}
+Want to try again? Retake the test: ${retakeUrl}
+
+Keep practicing!
+
+The SAT Practice Team
+        `,
+        html: `
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+  <h2 style="color: #2c6ecf;">Test Results</h2>
+  <p>You have completed the SAT practice test:</p>
+  <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <h3 style="margin-top: 0;">${testName}</h3>
+    <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+      <div style="text-align: center; padding: 10px 15px; background-color: white; border-radius: 5px; flex: 1; margin-right: 10px;">
+        <div style="font-size: 14px; color: #666;">Score</div>
+        <div style="font-size: 24px; font-weight: bold; color: ${percentage >= 70 ? '#4caf50' : percentage >= 50 ? '#ff9800' : '#f44336'};">
+          ${score}/${totalQuestions}
+        </div>
+        <div style="font-size: 16px;">${percentage}%</div>
+      </div>
+      <div style="text-align: center; padding: 10px 15px; background-color: white; border-radius: 5px; flex: 1;">
+        <div style="font-size: 14px; color: #666;">Time Taken</div>
+        <div style="font-size: 24px; font-weight: bold; color: #2c6ecf;">${timeFormatted}</div>
+      </div>
+    </div>
+  </div>
+  <div style="display: flex; justify-content: space-between; margin: 25px 0;">
+    <a href="${reviewUrl}" style="flex: 1; text-align: center; background-color: #2c6ecf; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; font-weight: bold; margin-right: 10px;">
+      Review Answers
+    </a>
+    <a href="${retakeUrl}" style="flex: 1; text-align: center; background-color: #ff9800; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; font-weight: bold;">
+      Retake Test
+    </a>
+  </div>
+  <p style="color: #666; margin-top: 30px; font-size: 14px;">
+    Keep practicing to improve your score!<br>
+    The SAT Practice Team
+  </p>
+</div>
+        `,
+      };
+
+      // Send email
+      const info = await transporter.sendMail(mailOptions);
+      console.log('Test attempt email sent:', info.messageId);
+      return true;
+    } catch (error) {
+      console.error('Error sending test attempt email:', error);
+      return false;
+    }
+  },
 };
