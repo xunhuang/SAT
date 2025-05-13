@@ -1,0 +1,88 @@
+[debug] [2025-05-12T22:29:37.567Z] ----------------------------------------------------------------------
+[debug] [2025-05-12T22:29:37.568Z] Command:       /usr/local/bin/node /usr/local/bin/firebase init
+[debug] [2025-05-12T22:29:37.569Z] CLI Version:   12.6.2
+[debug] [2025-05-12T22:29:37.569Z] Platform:      darwin
+[debug] [2025-05-12T22:29:37.569Z] Node Version:  v22.14.0
+[debug] [2025-05-12T22:29:37.569Z] Time:          Mon May 12 2025 15:29:37 GMT-0700 (Pacific Daylight Time)
+[debug] [2025-05-12T22:29:37.569Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-05-12T22:29:37.572Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-05-12T22:29:37.572Z] > authorizing via signed-in user (xhuang@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /Users/xhuang/projects/SAT
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[info] i  If you want to create a project in a Google Cloud organization or folder, please use "firebase projects:create" instead, and return to this command when you've created the project. 
+[debug] [2025-05-12T22:30:10.604Z] > refreshing access token with scopes: []
+[debug] [2025-05-12T22:30:10.607Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-05-12T22:30:10.607Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-05-12T22:30:11.124Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2025-05-12T22:30:11.124Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-05-12T22:30:11.125Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects [none]
+[debug] [2025-05-12T22:30:11.125Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects {"projectId":"satpractice","name":"satpractice"}
+[debug] [2025-05-12T22:30:11.409Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects 401
+[debug] [2025-05-12T22:30:11.409Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects {"error":{"code":401,"message":"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.","status":"UNAUTHENTICATED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"ACCESS_TOKEN_TYPE_UNSUPPORTED","metadata":{"method":"google.cloudresourcemanager.v1.Projects.CreateProject","service":"cloudresourcemanager.googleapis.com"}}]}}
+[debug] [2025-05-12T22:30:11.609Z] FirebaseError: HTTP Error: 401, Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+    at responseToError (/usr/local/lib/node_modules/firebase-tools/lib/responseToError.js:49:12)
+    at RetryOperation._fn (/usr/local/lib/node_modules/firebase-tools/lib/apiv2.js:285:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[error] 
+[error] Error: Failed to create project. See firebase-debug.log for more info.
+[debug] [2025-05-12T22:31:58.523Z] ----------------------------------------------------------------------
+[debug] [2025-05-12T22:31:58.524Z] Command:       /usr/local/bin/node /usr/local/bin/firebase init
+[debug] [2025-05-12T22:31:58.524Z] CLI Version:   12.6.2
+[debug] [2025-05-12T22:31:58.524Z] Platform:      darwin
+[debug] [2025-05-12T22:31:58.524Z] Node Version:  v22.14.0
+[debug] [2025-05-12T22:31:58.524Z] Time:          Mon May 12 2025 15:31:58 GMT-0700 (Pacific Daylight Time)
+[debug] [2025-05-12T22:31:58.524Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-05-12T22:31:58.527Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-05-12T22:31:58.527Z] > authorizing via signed-in user (xhuang@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /Users/xhuang/projects/SAT
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[info] i  If you want to create a project in a Google Cloud organization or folder, please use "firebase projects:create" instead, and return to this command when you've created the project. 
+[debug] [2025-05-12T22:32:33.310Z] > refreshing access token with scopes: []
+[debug] [2025-05-12T22:32:33.313Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-05-12T22:32:33.313Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-05-12T22:32:33.554Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2025-05-12T22:32:33.554Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-05-12T22:32:33.555Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects [none]
+[debug] [2025-05-12T22:32:33.555Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects {"projectId":"satpractice","name":"satpractice"}
+[debug] [2025-05-12T22:32:34.032Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects 401
+[debug] [2025-05-12T22:32:34.032Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects {"error":{"code":401,"message":"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.","status":"UNAUTHENTICATED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"ACCESS_TOKEN_TYPE_UNSUPPORTED","metadata":{"method":"google.cloudresourcemanager.v1.Projects.CreateProject","service":"cloudresourcemanager.googleapis.com"}}]}}
+[debug] [2025-05-12T22:32:34.278Z] FirebaseError: HTTP Error: 401, Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+    at responseToError (/usr/local/lib/node_modules/firebase-tools/lib/responseToError.js:49:12)
+    at RetryOperation._fn (/usr/local/lib/node_modules/firebase-tools/lib/apiv2.js:285:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[error] 
+[error] Error: Failed to create project. See firebase-debug.log for more info.
