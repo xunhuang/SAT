@@ -1,0 +1,141 @@
+.test-history {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.test-history h2 {
+  color: #2c3e50;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e1e8ed;
+}
+
+.empty-history {
+  text-align: center;
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  color: #7f8c8d;
+  border: 1px dashed #e1e8ed;
+}
+
+.empty-history p:first-child {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.attempt-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.attempt-card {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #e1e8ed;
+  transition: all 0.2s ease;
+}
+
+.attempt-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.attempt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.attempt-header h3 {
+  font-size: 1.1rem;
+  color: #2c3e50;
+  margin: 0;
+  font-weight: 600;
+}
+
+.attempt-score {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.score-label {
+  font-size: 0.9rem;
+  color: #7f8c8d;
+}
+
+.score-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #3498db;
+}
+
+.attempt-details {
+  margin-bottom: 1rem;
+}
+
+.attempt-date {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  margin-bottom: 0.3rem;
+}
+
+.attempt-progress {
+  font-size: 0.9rem;
+  color: #34495e;
+}
+
+.attempt-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.retake-button, .review-button {
+  padding: 0.5rem 1rem;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.retake-button {
+  background-color: #3498db;
+}
+
+.review-button {
+  background-color: #27ae60;
+  flex-grow: 1;
+}
+
+.retake-button:hover {
+  background-color: #2980b9;
+  transform: translateY(-1px);
+}
+
+.review-button:hover {
+  background-color: #219653;
+  transform: translateY(-1px);
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 2rem;
+  color: #7f8c8d;
+}
+
+.error {
+  color: #e74c3c;
+}
