@@ -21,6 +21,25 @@ export interface UserSettings {
  */
 export default {
   /**
+   * Check if a user is new (doesn't have settings yet)
+   * @param userId User ID
+   * @returns Promise<boolean> True if user is new, false otherwise
+   */
+  async isNewUser(userId: string): Promise<boolean> {
+    try {
+      const db = getFirebaseAdmin().firestore();
+      const settingsDoc = await db.collection('userSettings').doc(userId).get();
+      
+      // User is new if they don't have settings yet
+      return !settingsDoc.exists;
+    } catch (error) {
+      console.error('Error checking if user is new:', error);
+      // Default to false in case of error
+      return false;
+    }
+  },
+
+  /**
    * Get user settings from Firestore
    * @param userId User ID
    * @returns Promise<UserSettings> User settings object
@@ -85,6 +104,51 @@ export default {
     } catch (error) {
       console.error('Error getting user email info:', error);
       return { notificationEmails: [] };
+    }
+  },
+
+  /**
+   * Initialize a new user's settings
+   * @param userId User ID
+   * @returns Promise<UserSettings> The initialized user settings
+   */
+  async initializeNewUser(userId: string): Promise<UserSettings> {
+    try {
+      // Check if user already has settings
+      const isNew = await this.isNewUser(userId);
+      
+      if (!isNew) {
+        // User already has settings, just return them
+        return this.getUserSettings(userId);
+      }
+      
+      // Get user's email from Firebase Auth
+      let email: string | undefined;
+      try {
+        const auth = getFirebaseAdmin().auth();
+        const userRecord = await auth.getUser(userId);
+        email = userRecord.email;
+      } catch (authError) {
+        console.error('Error getting user email from Auth:', authError);
+      }
+      
+      // Create initial settings with email if available
+      const initialSettings: UserSettings = {
+        ...DEFAULT_SETTINGS,
+        notificationEmails: email ? [email] : [],
+        email: email,
+      };
+      
+      // Save settings to Firestore
+      const db = getFirebaseAdmin().firestore();
+      await db.collection('userSettings').doc(userId).set(initialSettings);
+      
+      console.log(`Initialized settings for new user: ${userId}`);
+      return initialSettings;
+    } catch (error) {
+      console.error('Error initializing new user:', error);
+      // Return default settings in case of error
+      return DEFAULT_SETTINGS;
     }
   },
 };

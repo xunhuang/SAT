@@ -4,6 +4,7 @@ import questionRoutes from './questionRoutes';
 import testRoutes from './testRoutes';
 import questionBankRoutes from './questionBankRoutes';
 import emailRoutes from './emailRoutes';
+import userRoutes from './userRoutes';
 // Import other route files here as the application grows
 
 const router = express.Router();
@@ -22,6 +23,9 @@ router.use('/question-bank', questionBankRoutes);
 
 // Email routes
 router.use('/email', emailRoutes);
+
+// User routes
+router.use('/users', userRoutes);
 
 // Add other routes here
 // router.use('/auth', authRoutes);

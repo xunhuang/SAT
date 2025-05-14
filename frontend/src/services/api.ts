@@ -182,6 +182,25 @@ export const populateQuestionBank = async (userId: string): Promise<ApiResponse<
   });
 };
 
+/**
+ * Check if a user is new (first-time sign in)
+ */
+export const isNewUser = async (userId: string): Promise<ApiResponse<{isNew: boolean}>> => {
+  return apiRequest<{isNew: boolean}>(`/users/${userId}/is-new`);
+};
+
+/**
+ * Initialize a new user (set up settings and populate question bank)
+ */
+export const initializeUser = async (userId: string): Promise<ApiResponse<{isNew: boolean, message: string, settings?: any, questionCount?: number}>> => {
+  return apiRequest<{isNew: boolean, message: string, settings?: any, questionCount?: number}>('/users/initialize', {
+    method: 'POST',
+    body: JSON.stringify({
+      userId
+    })
+  });
+};
+
 export default {
   apiRequest,
   checkApiHealth,
@@ -194,4 +213,6 @@ export default {
   getQuestionBankCount,
   getQuestionBankQuestions,
   populateQuestionBank,
+  isNewUser,
+  initializeUser,
 };

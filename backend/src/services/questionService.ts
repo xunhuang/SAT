@@ -7,7 +7,7 @@ const readdir = promisify(fs.readdir);
 const readFile = promisify(fs.readFile);
 
 // Path to the data directory containing question JSON files
-const DATA_DIR = path.join(__dirname, '../../../data');
+const DATA_DIR = path.join(__dirname, '../../data');
 
 // Interface for SAT question structure
 export interface SATQuestion {
