@@ -192,8 +192,8 @@ export const isNewUser = async (userId: string): Promise<ApiResponse<{isNew: boo
 /**
  * Initialize a new user (set up settings and populate question bank)
  */
-export const initializeUser = async (userId: string): Promise<ApiResponse<{isNew: boolean, message: string, settings?: any, questionCount?: number}>> => {
-  return apiRequest<{isNew: boolean, message: string, settings?: any, questionCount?: number}>('/users/initialize', {
+export const initializeUser = async (userId: string): Promise<ApiResponse<{isNew: boolean, message: string, settings?: any, questionCount?: number, firstTestId?: string}>> => {
+  return apiRequest<{isNew: boolean, message: string, settings?: any, questionCount?: number, firstTestId?: string}>('/users/initialize', {
     method: 'POST',
     body: JSON.stringify({
       userId

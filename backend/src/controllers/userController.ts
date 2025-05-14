@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import userSettingsService from '../services/userSettingsService';
 import questionBankService from '../services/questionBankService';
+import testService from '../services/testService';
 
 /**
  * User Controller
@@ -55,13 +56,18 @@ export default {
         console.log(`Populating question bank for new user: ${userId}`);
         const questionCount = await questionBankService.populateQuestionBank(userId);
         
+        // Create a first test with 10 questions
+        console.log(`Creating first test for new user: ${userId}`);
+        const testId = await testService.generateTest(userId, "First Test", 10);
+        
         res.status(200).json({
           success: true,
           data: {
-            message: `Successfully initialized new user and added ${questionCount} questions to bank`,
+            message: `Successfully initialized new user, added ${questionCount} questions to bank, and created first test`,
             isNew: true,
             settings,
-            questionCount
+            questionCount,
+            firstTestId: testId
           }
         });
       } else {

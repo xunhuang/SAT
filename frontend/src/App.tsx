@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-ro
 import './App.css';
 import { AuthProvider, useAuth } from './components/AuthProvider';
 import { SATQuestion } from './services/api';
+import InitializationOverlay from './components/InitializationOverlay';
 import TestList from './components/TestList';
 import TestView from './components/TestView';
 import ReviewAttempt from './components/ReviewAttempt';
@@ -229,6 +230,7 @@ function App() {
   return (
     <Router>
       <AuthProvider>
+        <InitializationOverlay />
         <AppWithAuth />
       </AuthProvider>
     </Router>
