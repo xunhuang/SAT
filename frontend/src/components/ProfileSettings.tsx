@@ -146,12 +146,20 @@ const ProfileSettings: React.FC = () => {
         onClick={() => setIsOpen(!isOpen)}
         title="Profile Settings"
       >
-        <div
-          className="profile-avatar"
-          style={{ backgroundColor: avatarColor }}
-        >
-          {currentUser.email ? currentUser.email.charAt(0).toUpperCase() : "?"}
-        </div>
+        {currentUser.photoURL ? (
+          <img
+            className="profile-image"
+            src={currentUser.photoURL}
+            alt="Profile"
+          />
+        ) : (
+          <div
+            className="profile-avatar"
+            style={{ backgroundColor: avatarColor }}
+          >
+            {currentUser.email ? currentUser.email.charAt(0).toUpperCase() : "?"}
+          </div>
+        )}
       </button>
 
       {isOpen && (
@@ -159,14 +167,22 @@ const ProfileSettings: React.FC = () => {
           <div className="profile-header">
             <h3>Profile Settings</h3>
             <div className="user-info">
-              <div
-                className="profile-avatar-large"
-                style={{ backgroundColor: avatarColor }}
-              >
-                {currentUser.email
-                  ? currentUser.email.charAt(0).toUpperCase()
-                  : "?"}
-              </div>
+              {currentUser.photoURL ? (
+                <img
+                  className="profile-image-large"
+                  src={currentUser.photoURL}
+                  alt="Profile"
+                />
+              ) : (
+                <div
+                  className="profile-avatar-large"
+                  style={{ backgroundColor: avatarColor }}
+                >
+                  {currentUser.email
+                    ? currentUser.email.charAt(0).toUpperCase()
+                    : "?"}
+                </div>
+              )}
               <div className="user-details">
                 <p className="user-name">{currentUser.displayName}</p>
                 <p className="user-email">{currentUser.email}</p>

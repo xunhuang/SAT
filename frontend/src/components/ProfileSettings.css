@@ -19,6 +19,8 @@
 
 .profile-image {
   object-fit: cover;
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .profile-avatar {
@@ -81,6 +83,8 @@
 
 .profile-image-large {
   object-fit: cover;
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .profile-avatar-large {
