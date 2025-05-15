@@ -170,7 +170,7 @@ The SAT Practice Team
 
       // URLs for review and retake
       const reviewUrl = `${BASE_URL}/review/${attemptId}`;
-      const retakeUrl = `${BASE_URL}/retake/${testId}`;
+      const retakeUrl = `${BASE_URL}/retake/${attemptId}`;
       
       // Generate HTML for wrong answers section
       let wrongAnswersHtml = '';
