@@ -624,7 +624,7 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
         renderTestResults()
       ) : (
         <>
-          <div className="test-header">
+          <span className="test-header">
             <h2>{currentTest.name}</h2>
 
             {reviewMode && <div className="review-badge">Review Mode</div>}
@@ -637,7 +637,7 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
               Question {currentQuestionIndex + 1} of{" "}
               {currentTest.questions.length}
             </div>
-          </div>
+          </span>
 
           <div className="question-container">
             <div

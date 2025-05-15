@@ -1,30 +1,30 @@
 .question-bank-container {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 15px;
 }
 
 .question-bank-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .question-bank-title {
   margin: 0;
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   color: #333;
 }
 
 .question-count {
-  font-size: 1.1rem;
+  font-size: 1rem;
   display: flex;
   align-items: center;
   background-color: #f5f5f5;
-  padding: 8px 16px;
-  border-radius: 20px;
-  margin-left: 15px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  margin-left: 10px;
 }
 
 .question-count-number {
@@ -72,16 +72,16 @@
 
 .question-bank-actions {
   display: flex;
-  margin-bottom: 20px;
-  padding: 20px;
+  margin-bottom: 15px;
+  padding: 12px;
   background-color: #f8f9fa;
-  border-radius: 8px;
+  border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .info-block {
   flex: 1;
-  padding-right: 20px;
+  padding-right: 12px;
 }
 
 .info-block h3 {
@@ -124,25 +124,25 @@
 }
 
 .bank-status {
-  margin-top: 30px;
-  padding: 20px;
+  margin-top: 20px;
+  padding: 15px;
   background-color: #fff;
-  border-radius: 8px;
+  border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .bank-stats {
   display: flex;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .stat-card {
   flex: 1;
-  padding: 15px;
+  padding: 10px;
   background-color: #f8f9fa;
-  border-radius: 8px;
+  border-radius: 6px;
   text-align: center;
-  margin-right: 15px;
+  margin-right: 10px;
 }
 
 .stat-card:last-child {

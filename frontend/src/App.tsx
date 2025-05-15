@@ -44,15 +44,21 @@ const AppLayout = ({ children }: { children: JSX.Element }) => {
     <div className="app">
       <div className="app-header">
         <Link to="/" className="app-title">
-          <h1>SAT Practice</h1>
+          <h2>SAT Practice</h2>
         </Link>
 
         <div className="app-nav">
           {currentUser && (
             <>
-              <Link to="/" className="nav-link">Tests</Link>
-              <Link to="/question-bank" className="nav-link">Question Bank</Link>
-              <Link to="/health" className="nav-link">API Status</Link>
+              <Link to="/" className="nav-link">
+                Tests
+              </Link>
+              <Link to="/question-bank" className="nav-link">
+                Question Bank
+              </Link>
+              <Link to="/health" className="nav-link">
+                API Status
+              </Link>
               <div className="user-info">
                 <ProfileSettings />
               </div>
@@ -60,10 +66,8 @@ const AppLayout = ({ children }: { children: JSX.Element }) => {
           )}
         </div>
       </div>
-      
-      <div className="app-content">
-        {children}
-      </div>
+
+      <div className="app-content">{children}</div>
     </div>
   );
 };

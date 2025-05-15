@@ -1,20 +1,19 @@
 .app {
-  max-width: 1280px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
   text-align: center;
   background-color: #ffffff;
   color: #2c3e50;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
-  border-radius: 12px;
+  border-radius: 8px;
 }
 
 .app-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 0;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   border-bottom: 1px solid #e1e8ed;
 }
 
@@ -34,15 +33,15 @@
 
 .app-nav {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .nav-link {
   color: #34495e;
   text-decoration: none;
   font-weight: 500;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
   transition: all 0.2s ease;
 }
 
@@ -74,12 +73,12 @@
   align-items: center;
   justify-content: center;
   min-height: 60vh;
-  padding: 2rem;
+  padding: 1.5rem;
   background-color: #f8f9fa;
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   text-align: center;
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -100,18 +99,18 @@
 .login-benefits {
   display: flex;
   justify-content: space-between;
-  margin: 2rem 0;
+  margin: 1.5rem 0;
   flex-wrap: wrap;
-  gap: 1.5rem;
+  gap: 1rem;
   width: 100%;
 }
 
 .benefit-item {
   flex: 1;
   min-width: 200px;
-  padding: 1.5rem;
+  padding: 1rem;
   background-color: white;
-  border-radius: 8px;
+  border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -319,11 +318,11 @@
 
 /* API Health styles */
 .api-health {
-  margin-top: 2.5rem;
-  padding: 1.5rem;
-  border-radius: 12px;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 8px;
   background-color: #f8f9fa;
-  max-width: 400px;
+  max-width: 500px;
   margin-left: auto;
   margin-right: auto;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
