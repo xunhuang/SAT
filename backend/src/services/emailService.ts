@@ -10,7 +10,7 @@ const EMAIL_PORT = parseInt(process.env.EMAIL_PORT || '587', 10);
 const EMAIL_USER = process.env.EMAIL_USER || '';
 const EMAIL_PASS = process.env.EMAIL_PASS || '';
 const EMAIL_FROM = process.env.EMAIL_FROM || 'sat-practice@example.com';
-const BASE_URL = process.env.BASE_URL || 'https://dmvtest-13aec.web.app';
+const BASE_URL = process.env.BASE_URL || 'https://sattest-eaadc.firebaseapp.com';
 
 // Create a nodemailer transporter
 const transporter = nodemailer.createTransport({

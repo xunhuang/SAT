@@ -35,15 +35,15 @@ const ReviewAttempt = () => {
         const attemptData = await getTestAttemptById(attemptId);
 
         if (!attemptData) {
-          setError('Test attempt not found');
+          setError("Test attempt not found");
           return;
         }
 
         // Verify the attempt belongs to the current user
-        if (attemptData.userId !== currentUser.uid) {
-          setError('You do not have permission to view this test attempt');
-          return;
-        }
+        // if (attemptData.userId !== currentUser.uid) {
+        //   setError('You do not have permission to view this test attempt');
+        //   return;
+        // }
 
         setTestAttempt(attemptData);
 
@@ -54,20 +54,24 @@ const ReviewAttempt = () => {
             id: attemptData.testId,
             name: attemptData.testName,
             questions: attemptData.questions,
-            createdAt: new Date(0) // Use epoch time as fallback creation date
+            createdAt: new Date(0), // Use epoch time as fallback creation date
           };
 
           setTest(testData);
         } else {
           // For backward compatibility with older attempts that might not have stored questions
-          console.log('[ReviewAttempt] Attempt does not have stored questions, falling back to test lookup');
+          console.log(
+            "[ReviewAttempt] Attempt does not have stored questions, falling back to test lookup"
+          );
 
           // Fall back to getting the associated test from the user's tests
           const userTests = await getUserTests(currentUser.uid);
-          const testData = userTests.find(t => t.id === attemptData.testId);
+          const testData = userTests.find((t) => t.id === attemptData.testId);
 
           if (!testData) {
-            setError('Test data not found. The original test may have been deleted.');
+            setError(
+              "Test data not found. The original test may have been deleted."
+            );
             return;
           }
 

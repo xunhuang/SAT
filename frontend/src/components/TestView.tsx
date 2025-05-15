@@ -75,12 +75,12 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
 
       const data = testDoc.data();
 
-      // Check if the test belongs to the current user
-      if (data.userId !== userId) {
-        console.error("[TestView] Test belongs to a different user");
-        setErrorMessage("You do not have permission to view this test.");
-        return false;
-      }
+      // // Check if the test belongs to the current user
+      // if (data.userId !== userId) {
+      //   console.error("[TestView] Test belongs to a different user");
+      //   setErrorMessage("You do not have permission to view this test.");
+      //   return false;
+      // }
 
       // Convert to Test object
       const testData = {

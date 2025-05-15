@@ -35,10 +35,10 @@ const RetakeTest = () => {
         }
 
         // Verify the attempt belongs to the current user
-        if (attemptData.userId !== currentUser.uid) {
-          setError("You do not have permission to view this test attempt");
-          return;
-        }
+        // if (attemptData.userId !== currentUser.uid) {
+        //   setError("You do not have permission to view this test attempt");
+        //   return;
+        // }
 
         // Make sure the attempt has questions
         if (!attemptData.questions || attemptData.questions.length === 0) {
