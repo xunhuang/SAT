@@ -54,7 +54,7 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
   }, []);
 
   // Direct test loading function using Firestore
-  const loadTestDirectly = async (testId: string, userId: string) => {
+  const loadTestDirectly = async (testId: string) => {
     try {
       console.log("[TestView] Directly loading test from Firestore:", testId);
 
@@ -74,13 +74,6 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
       }
 
       const data = testDoc.data();
-
-      // // Check if the test belongs to the current user
-      // if (data.userId !== userId) {
-      //   console.error("[TestView] Test belongs to a different user");
-      //   setErrorMessage("You do not have permission to view this test.");
-      //   return false;
-      // }
 
       // Convert to Test object
       const testData = {
@@ -268,7 +261,7 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
           "[TestView] Test not found in props, loading directly from Firestore"
         );
         directLoadAttempted.current = true; // Mark as attempted
-        await loadTestDirectly(testId, currentUser.uid);
+        await loadTestDirectly(testId);
       } else if (!directLoadAttempted.current) {
         console.error("[TestView] No current user to load test for");
         setErrorMessage("You must be logged in to view this test.");
@@ -624,7 +617,7 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
         renderTestResults()
       ) : (
         <>
-          <span className="test-header">
+          <div className="test-header">
             <h2>{currentTest.name}</h2>
 
             {reviewMode && <div className="review-badge">Review Mode</div>}
@@ -637,7 +630,7 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
               Question {currentQuestionIndex + 1} of{" "}
               {currentTest.questions.length}
             </div>
-          </span>
+          </div>
 
           <div className="question-container">
             <div
