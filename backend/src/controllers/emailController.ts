@@ -61,13 +61,16 @@ export default {
       }
       
       // Process wrongAnswers to convert SVG to PNG if needed
+      let allAttachments: any[] = [];
       if (wrongAnswers && wrongAnswers.length > 0) {
         // Process each question's stimulus if it contains SVG
         for (let i = 0; i < wrongAnswers.length; i++) {
           if (wrongAnswers[i].stimulus && wrongAnswers[i].stimulus.includes('<svg')) {
             try {
               // Convert SVG in stimulus to PNG
-              wrongAnswers[i].stimulus = await imageConversionService.processSvgInHtml(wrongAnswers[i].stimulus);
+              const { html, attachments } = await imageConversionService.processSvgInHtml(wrongAnswers[i].stimulus);
+              wrongAnswers[i].stimulus = html;
+              allAttachments = [...allAttachments, ...attachments];
             } catch (conversionError) {
               console.error('Error converting SVG to PNG:', conversionError);
               // If conversion fails, provide a fallback message
@@ -89,7 +92,8 @@ export default {
         timeTaken,
         userEmailInfo.email,
         userEmailInfo.notificationEmails,
-        wrongAnswers || []
+        wrongAnswers || [],
+        allAttachments
       );
       
       if (emailSent) {

@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import imageConversionService from '../services/imageConversionService';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -27,6 +28,20 @@ const transporter = nodemailer.createTransport({
 const isEmailConfigured = (): boolean => {
   return Boolean(EMAIL_USER && EMAIL_PASS);
 };
+
+interface Option {
+  id: string;
+  content: string;
+}
+
+interface WrongAnswer {
+  question: string;
+  stimulus?: string;
+  options: Option[];
+  userAnswer: string;
+  correctAnswer: string;
+  explanation: string;
+}
 
 /**
  * Email Service
@@ -124,6 +139,7 @@ The SAT Practice Team
    * @param recipientEmail Primary recipient email
    * @param additionalEmails Additional notification emails (optional)
    * @param wrongAnswers Details of wrong answers (optional)
+   * @param attachments Attachments for the email
    * @returns Promise<boolean> Success status
    */
   async sendTestAttemptEmail(
@@ -132,17 +148,11 @@ The SAT Practice Team
     testName: string,
     score: number,
     totalQuestions: number,
-    timeTaken: number, // in seconds
+    timeTaken: number,
     recipientEmail: string,
     additionalEmails: string[] = [],
-    wrongAnswers: Array<{
-      question: string;
-      stimulus?: string;
-      options: Array<{ id: string; content: string }>;
-      userAnswer: string;
-      correctAnswer: string;
-      explanation: string;
-    }> = []
+    wrongAnswers: WrongAnswer[] = [],
+    attachments: any[] = []
   ): Promise<boolean> {
     try {
       if (!isEmailConfigured()) {
@@ -177,6 +187,25 @@ The SAT Practice Team
       let wrongAnswersText = '';
       
       if (wrongAnswers && wrongAnswers.length > 0) {
+        // Process each question's stimulus if it contains SVG
+        for (let i = 0; i < wrongAnswers.length; i++) {
+          const wrongAnswer = wrongAnswers[i];
+          if (wrongAnswer?.stimulus && wrongAnswer.stimulus.includes('<svg')) {
+            try {
+              // Convert SVG in stimulus to PNG
+              const { html, attachments: svgAttachments } = await imageConversionService.processSvgInHtml(wrongAnswer.stimulus);
+              wrongAnswer.stimulus = html;
+              attachments = [...attachments, ...svgAttachments];
+            } catch (conversionError) {
+              console.error('Error converting SVG to PNG:', conversionError);
+              // If conversion fails, provide a fallback message
+              wrongAnswers[i].stimulus = `<div style="padding: 10px; border: 1px solid #ccc; background-color: #f9f9f9; margin: 10px 0;">
+                <p><strong>[Image]</strong> A graphical element is available in the online version.</p>
+              </div>`;
+            }
+          }
+        }
+
         wrongAnswersHtml = `
         <div style="margin-top: 30px;">
           <h3 style="color: #2c6ecf; border-bottom: 1px solid #eee; padding-bottom: 10px;">Questions You Missed</h3>
@@ -189,7 +218,7 @@ The SAT Practice Team
               ${item.stimulus ? `<div style="margin-bottom: 15px;">${item.stimulus}</div>` : ''}
               
               <div style="margin-bottom: 10px;">
-                ${item.options.map((option, optionIndex) => `
+                ${item.options.map((option: Option, optionIndex: number) => `
                   <div style="
                     margin-bottom: 5px; 
                     padding: 8px; 
@@ -216,7 +245,7 @@ The SAT Practice Team
           wrongAnswers.map((item, index) => 
             `Question ${index + 1}: ${item.question}\n` + 
             `${item.stimulus ? 'Stimulus: [See email HTML version or review answers online for complete graphs and images]\n' : ''}` +
-            `${item.options.map((opt, i) => `${String.fromCharCode(65 + i)}. ${opt.content}${opt.id === item.userAnswer ? ' (Your Answer)' : ''}${opt.id === item.correctAnswer ? ' (Correct Answer)' : ''}`).join('\n')}\n` + 
+            `${item.options.map((opt: Option, i: number) => `${String.fromCharCode(65 + i)}. ${opt.content}${opt.id === item.userAnswer ? ' (Your Answer)' : ''}${opt.id === item.correctAnswer ? ' (Correct Answer)' : ''}`).join('\n')}\n` + 
             `Explanation: ${item.explanation || 'No explanation available.'}\n`
           ).join('\n');
       }
@@ -279,6 +308,7 @@ The SAT Practice Team
   </p>
 </div>
         `,
+        attachments: attachments
       };
 
       // Send email
