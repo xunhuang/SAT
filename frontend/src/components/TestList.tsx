@@ -50,6 +50,29 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
     };
   }, [currentUser]);
 
+  // Function to generate default test name with user's name and current date
+  const generateDefaultTestName = (): string => {
+    // Get user's name (or email if no display name)
+    const userName = currentUser?.displayName || 
+                    (currentUser?.email ? currentUser.email.split('@')[0] : 'User');
+    
+    // Get current date in format like "May 15, 2025"
+    const currentDate = new Date().toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+    
+    return `${userName}'s Test - ${currentDate}`;
+  };
+
+  // Set default test name when opening create test form
+  useEffect(() => {
+    if (isCreatingTest && newTestName === '') {
+      setNewTestName(generateDefaultTestName());
+    }
+  }, [isCreatingTest, currentUser]);
+
   // Create a new test using the backend service
   const createNewTest = async () => {
     if (!newTestName.trim()) {
@@ -179,6 +202,18 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
               placeholder="Enter test name"
               className="test-name-input"
             />
+            <div className="question-count-input-container">
+              <label htmlFor="question-count">Number of questions:</label>
+              <input
+                id="question-count"
+                type="number"
+                min="1"
+                max="50"
+                value={questionCount}
+                onChange={(e) => setQuestionCount(Math.max(1, Math.min(50, parseInt(e.target.value) || 10)))}
+                className="question-count-input"
+              />
+            </div>
             <div className="form-buttons">
               <button
                 className="create-button"
