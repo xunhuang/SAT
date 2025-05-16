@@ -1,6 +1,5 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
-import imageConversionService from '../services/imageConversionService';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -187,24 +186,6 @@ The SAT Practice Team
       let wrongAnswersText = '';
       
       if (wrongAnswers && wrongAnswers.length > 0) {
-        // Process each question's stimulus if it contains SVG
-        for (let i = 0; i < wrongAnswers.length; i++) {
-          const wrongAnswer = wrongAnswers[i];
-          if (wrongAnswer?.stimulus && wrongAnswer.stimulus.includes('<svg')) {
-            try {
-              // Convert SVG in stimulus to PNG
-              const { html, attachments: svgAttachments } = await imageConversionService.processSvgInHtml(wrongAnswer.stimulus);
-              wrongAnswer.stimulus = html;
-              attachments = [...attachments, ...svgAttachments];
-            } catch (conversionError) {
-              console.error('Error converting SVG to PNG:', conversionError);
-              // If conversion fails, provide a fallback message
-              wrongAnswers[i].stimulus = `<div style="padding: 10px; border: 1px solid #ccc; background-color: #f9f9f9; margin: 10px 0;">
-                <p><strong>[Image]</strong> A graphical element is available in the online version.</p>
-              </div>`;
-            }
-          }
-        }
 
         wrongAnswersHtml = `
         <div style="margin-top: 30px;">
