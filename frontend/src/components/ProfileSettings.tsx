@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useAuth } from './AuthProvider';
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useAuth } from "./AuthProvider";
 import {
   getUserSettings,
   saveUserSettings,
   DEFAULT_SETTINGS,
   UserSettings,
 } from "../services/userSettingsService";
-import eventBus, { EVENTS } from '../services/eventBus';
-import './ProfileSettings.css';
+import eventBus, { EVENTS } from "../services/eventBus";
+import "./ProfileSettings.css";
 
 // Use UserSettings interface from userSettingsService.ts
 
@@ -15,9 +15,21 @@ import './ProfileSettings.css';
 const getAvatarColor = (str: string): string => {
   // List of nice colors
   const colors = [
-    '#3498db', '#2ecc71', '#9b59b6', '#e74c3c', '#f1c40f',
-    '#1abc9c', '#34495e', '#e67e22', '#7f8c8d', '#27ae60',
-    '#2980b9', '#8e44ad', '#c0392b', '#d35400', '#16a085'
+    "#3498db",
+    "#2ecc71",
+    "#9b59b6",
+    "#e74c3c",
+    "#f1c40f",
+    "#1abc9c",
+    "#34495e",
+    "#e67e22",
+    "#7f8c8d",
+    "#27ae60",
+    "#2980b9",
+    "#8e44ad",
+    "#c0392b",
+    "#d35400",
+    "#16a085",
   ];
 
   // Simple hash function
@@ -36,22 +48,28 @@ const ProfileSettings: React.FC = () => {
   const { currentUser, signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_SETTINGS);
-  const [newEmail, setNewEmail] = useState('');
+  const [isDirty, setIsDirty] = useState(false);
+  const [newEmail, setNewEmail] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [saveMessage, setSaveMessage] = useState<{text: string, type: 'success' | 'error'} | null>(null);
+  const [saveMessage, setSaveMessage] = useState<{
+    text: string;
+    type: "success" | "error";
+  } | null>(null);
   const popupRef = useRef<HTMLDivElement>(null);
 
   // Calculate avatar color based on email
-  const avatarColor = currentUser?.email ? getAvatarColor(currentUser.email) : '#3498db';
+  const avatarColor = currentUser?.email
+    ? getAvatarColor(currentUser.email)
+    : "#3498db";
 
   // Debug logging
   useEffect(() => {
     if (currentUser) {
-      console.log('Current user info:', {
+      console.log("Current user info:", {
         displayName: currentUser.displayName,
         email: currentUser.email,
         photoURL: currentUser.photoURL,
-        uid: currentUser.uid
+        uid: currentUser.uid,
       });
     }
   }, [currentUser]);
@@ -65,7 +83,7 @@ const ProfileSettings: React.FC = () => {
         const userSettings = await getUserSettings(currentUser.uid);
         setSettings(userSettings);
       } catch (error) {
-        console.error('Error loading user settings:', error);
+        console.error("Error loading user settings:", error);
       }
     };
 
@@ -75,14 +93,17 @@ const ProfileSettings: React.FC = () => {
   // Close popup when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -96,33 +117,62 @@ const ProfileSettings: React.FC = () => {
     try {
       // Save settings using the service
       await saveUserSettings(currentUser.uid, settings);
-      
+
       // Emit an event to notify other components
       eventBus.emit(EVENTS.USER_SETTINGS_UPDATED, settings);
-      
-      setSaveMessage({ text: 'Settings saved successfully!', type: 'success' });
-      
+
+      setSaveMessage({ text: "Settings saved", type: "success" });
+      setIsDirty(false);
+
       // Clear message after 3 seconds
       setTimeout(() => setSaveMessage(null), 3000);
     } catch (error) {
-      console.error('Error saving settings:', error);
-      setSaveMessage({ text: 'Failed to save settings.', type: 'error' });
+      console.error("Error saving settings:", error);
+      setSaveMessage({ text: "Failed to save settings", type: "error" });
     } finally {
       setIsSaving(false);
     }
   };
 
+  // Debounced save function to prevent excessive saves
+  const debouncedSave = useCallback(
+    (() => {
+      let timeoutId: NodeJS.Timeout | null = null;
+      return () => {
+        if (timeoutId) clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          if (isDirty && currentUser) {
+            saveSettings();
+          }
+        }, 800); // 800ms debounce delay
+      };
+    })(),
+    [settings, currentUser, isDirty]
+  );
+
+  // Auto-save when settings change
+  useEffect(() => {
+    if (isDirty) {
+      debouncedSave();
+    }
+  }, [isDirty, debouncedSave]);
+
   // Add email to notification list
   const addEmail = () => {
-    if (!newEmail || !newEmail.includes('@') || settings.notificationEmails.includes(newEmail)) {
+    if (
+      !newEmail ||
+      !newEmail.includes("@") ||
+      settings.notificationEmails.includes(newEmail)
+    ) {
       return;
     }
 
     setSettings({
       ...settings,
-      notificationEmails: [...settings.notificationEmails, newEmail]
+      notificationEmails: [...settings.notificationEmails, newEmail],
     });
-    setNewEmail('');
+    setNewEmail("");
+    setIsDirty(true);
   };
 
   // Remove email from notification list
@@ -133,6 +183,7 @@ const ProfileSettings: React.FC = () => {
         (e: string) => e !== email
       ),
     });
+    setIsDirty(true);
   };
 
   if (!currentUser) {
@@ -157,7 +208,9 @@ const ProfileSettings: React.FC = () => {
             className="profile-avatar"
             style={{ backgroundColor: avatarColor }}
           >
-            {currentUser.email ? currentUser.email.charAt(0).toUpperCase() : "?"}
+            {currentUser.email
+              ? currentUser.email.charAt(0).toUpperCase()
+              : "?"}
           </div>
         )}
       </button>
@@ -165,7 +218,6 @@ const ProfileSettings: React.FC = () => {
       {isOpen && (
         <div className="profile-popup" ref={popupRef}>
           <div className="profile-header">
-            <h3>Profile Settings</h3>
             <div className="user-info">
               {currentUser.photoURL ? (
                 <img
@@ -201,15 +253,16 @@ const ProfileSettings: React.FC = () => {
                 min="1"
                 max="50"
                 value={settings.defaultQuestionCount}
-                onChange={(e) =>
+                onChange={(e) => {
                   setSettings({
                     ...settings,
                     defaultQuestionCount: Math.max(
                       1,
                       Math.min(50, parseInt(e.target.value) || 10)
                     ),
-                  })
-                }
+                  });
+                  setIsDirty(true);
+                }}
               />
             </div>
 
@@ -221,15 +274,16 @@ const ProfileSettings: React.FC = () => {
                 min="10"
                 max="300"
                 value={settings.secondsPerQuestion}
-                onChange={(e) =>
+                onChange={(e) => {
                   setSettings({
                     ...settings,
                     secondsPerQuestion: Math.max(
                       10,
                       Math.min(300, parseInt(e.target.value) || 60)
                     ),
-                  })
-                }
+                  });
+                  setIsDirty(true);
+                }}
               />
             </div>
           </div>
@@ -278,13 +332,7 @@ const ProfileSettings: React.FC = () => {
                 {saveMessage.text}
               </p>
             )}
-            <button
-              className="save-settings-button"
-              onClick={saveSettings}
-              disabled={isSaving}
-            >
-              {isSaving ? "Saving..." : "Save Settings"}
-            </button>
+            {isSaving && <p className="save-status">Saving...</p>}
             <button className="sign-out-button" onClick={signOut}>
               Sign Out
             </button>
