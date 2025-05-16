@@ -87,25 +87,4 @@ export default {
       throw new Error(`Question not found: ${id}`);
     }
   },
-
-  /**
-   * Get a random question
-   * @returns Promise<SATQuestion> A random question
-   */
-  async getRandomQuestion(): Promise<SATQuestion> {
-    try {
-      const allIds = await this.getAllQuestionIds();
-      if (allIds.length === 0) {
-        throw new Error('No questions available');
-      }
-      
-      const randomIndex = Math.floor(Math.random() * allIds.length);
-      const randomId = allIds[randomIndex];
-      
-      return await this.getQuestionById(randomId);
-    } catch (error) {
-      console.error('Error getting random question:', error);
-      throw new Error('Failed to retrieve random question');
-    }
-  }
 }

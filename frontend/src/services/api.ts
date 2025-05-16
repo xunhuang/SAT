@@ -87,13 +87,6 @@ export const getQuestionById = async (id: string): Promise<ApiResponse<SATQuesti
 };
 
 /**
- * Get a random question
- */
-export const getRandomQuestion = async (): Promise<ApiResponse<SATQuestion>> => {
-  return apiRequest<SATQuestion>('/questions/random');
-};
-
-/**
  * Get all question IDs
  */
 export const getQuestionIds = async (): Promise<ApiResponse<string[]>> => {
@@ -202,11 +195,9 @@ export const initializeUser = async (userId: string): Promise<ApiResponse<{isNew
 };
 
 export default {
-  apiRequest,
   checkApiHealth,
   getQuestions,
   getQuestionById,
-  getRandomQuestion,
   getQuestionIds,
   generateTest,
   sendTestAttemptEmail,

@@ -8,7 +8,6 @@ router.get('/', questionController.getQuestions);
 router.get('/ids', questionController.getAllQuestionIds);
 
 // Note: The order is important - specific routes should come before parameterized routes
-router.get('/random', questionController.getRandomQuestion);
 router.get('/:id', questionController.getQuestionById);
 
 export default router;

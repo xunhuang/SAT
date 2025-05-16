@@ -49,22 +49,6 @@ export default {
   },
 
   /**
-   * Get a random question
-   * @route GET /api/questions/random
-   */
-  async getRandomQuestion(req: Request, res: Response, next: NextFunction) {
-    try {
-      const question = await questionService.getRandomQuestion();
-
-      res.status(200).json({
-        data: question
-      });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  /**
    * Get all question IDs
    * @route GET /api/questions/ids
    */
