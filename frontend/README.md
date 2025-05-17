@@ -6,6 +6,7 @@ This is a web application for practicing SAT questions.
 
 - Google authentication for user login
 - Protected routes that require authentication
+- Optional timer display while taking tests
 - SAT question browser (upcoming)
 
 ## Setup
