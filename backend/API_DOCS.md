@@ -202,6 +202,7 @@ Sends an email notification when a test attempt is completed, including test sco
   "testName": "string",
   "score": 8,
   "totalQuestions": 10,
+  "allocatedTime": 600,
   "timeTaken": 300
 }
 ```
@@ -214,6 +215,7 @@ Sends an email notification when a test attempt is completed, including test sco
 - `score` (required): The number of correct answers
 - `totalQuestions` (required): The total number of questions in the test
 - `timeTaken` (required): The time taken to complete the test in seconds
+- `allocatedTime` (required): The time allocated for the test in seconds
 
 **Response:**
 ```json
