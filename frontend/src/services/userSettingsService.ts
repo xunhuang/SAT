@@ -65,6 +65,7 @@ export const sendTestAttemptNotifications = async (
   testName: string,
   score: number,
   totalQuestions: number,
+  allocatedTime: number,
   timeTaken: number,
   wrongAnswers?: WrongAnswer[]
 ): Promise<boolean> => {
@@ -79,6 +80,7 @@ export const sendTestAttemptNotifications = async (
       testName,
       score,
       totalQuestions,
+      allocatedTime,
       timeTaken,
       wrongAnswers
     );

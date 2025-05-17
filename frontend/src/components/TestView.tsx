@@ -34,6 +34,8 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
   const [showResults, setShowResults] = useState(false);
   const [reviewMode, setReviewMode] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
+  const [totalAllowedTime, setTotalAllowedTime] = useState<number | null>(null);
+  const [timeTakenState, setTimeTakenState] = useState<number | null>(null);
 
   // State for loading and errors
   const [initialLoading, setInitialLoading] = useState(true);
@@ -110,23 +112,26 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
       if (currentUser) {
         getUserSettings(currentUser.uid)
           .then((settings) => {
-            setTimeRemaining(
-              testData.questions.length * settings.secondsPerQuestion
-            );
+            const allowed =
+              testData.questions.length * settings.secondsPerQuestion;
+            setTotalAllowedTime(allowed);
+            setTimeRemaining(allowed);
           })
           .catch((error) => {
             console.error(
               "[TestView] Error loading user settings, using default timer:",
               error
             );
-            setTimeRemaining(
-              testData.questions.length * DEFAULT_SETTINGS.secondsPerQuestion
-            );
+            const allowed =
+              testData.questions.length * DEFAULT_SETTINGS.secondsPerQuestion;
+            setTotalAllowedTime(allowed);
+            setTimeRemaining(allowed);
           });
       } else {
-        setTimeRemaining(
-          testData.questions.length * DEFAULT_SETTINGS.secondsPerQuestion
-        );
+        const allowed =
+          testData.questions.length * DEFAULT_SETTINGS.secondsPerQuestion;
+        setTotalAllowedTime(allowed);
+        setTimeRemaining(allowed);
       }
 
       return true;
@@ -174,23 +179,26 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
         if (currentUser) {
           getUserSettings(currentUser.uid)
             .then((settings) => {
-              setTimeRemaining(
-                test.questions.length * settings.secondsPerQuestion
-              );
+              const allowed =
+                test.questions.length * settings.secondsPerQuestion;
+              setTotalAllowedTime(allowed);
+              setTimeRemaining(allowed);
             })
             .catch((error) => {
               console.error(
                 "[TestView] Error loading user settings, using default timer:",
                 error
               );
-              setTimeRemaining(
-                test.questions.length * DEFAULT_SETTINGS.secondsPerQuestion
-              );
+              const allowed =
+                test.questions.length * DEFAULT_SETTINGS.secondsPerQuestion;
+              setTotalAllowedTime(allowed);
+              setTimeRemaining(allowed);
             });
         } else {
-          setTimeRemaining(
-            test.questions.length * DEFAULT_SETTINGS.secondsPerQuestion
-          );
+          const allowed =
+            test.questions.length * DEFAULT_SETTINGS.secondsPerQuestion;
+          setTotalAllowedTime(allowed);
+          setTimeRemaining(allowed);
         }
         return;
       }
@@ -232,23 +240,26 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
           if (currentUser) {
             getUserSettings(currentUser.uid)
               .then((settings) => {
-                setTimeRemaining(
-                  test.questions.length * settings.secondsPerQuestion
-                );
+                const allowed =
+                  test.questions.length * settings.secondsPerQuestion;
+                setTotalAllowedTime(allowed);
+                setTimeRemaining(allowed);
               })
               .catch((error) => {
                 console.error(
                   "[TestView] Error loading user settings, using default timer:",
                   error
                 );
-                setTimeRemaining(
-                  test.questions.length * DEFAULT_SETTINGS.secondsPerQuestion
-                );
+                const allowed =
+                  test.questions.length * DEFAULT_SETTINGS.secondsPerQuestion;
+                setTotalAllowedTime(allowed);
+                setTimeRemaining(allowed);
               });
           } else {
-            setTimeRemaining(
-              test.questions.length * DEFAULT_SETTINGS.secondsPerQuestion
-            );
+            const allowed =
+              test.questions.length * DEFAULT_SETTINGS.secondsPerQuestion;
+            setTotalAllowedTime(allowed);
+            setTimeRemaining(allowed);
           }
           return;
         }
@@ -274,17 +285,10 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
 
   // Timer effect
   useEffect(() => {
-    if (timeRemaining === null || timeRemaining <= 0 || showResults) return;
+    if (timeRemaining === null || showResults) return;
 
     const timer = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev !== null && prev > 0) {
-          return prev - 1;
-        } else {
-          clearInterval(timer);
-          return 0;
-        }
-      });
+      setTimeRemaining((prev) => (prev !== null ? prev - 1 : null));
     }, 1000);
 
     return () => clearInterval(timer);
@@ -292,9 +296,11 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
 
   // Format time function
   const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
+    const sign = seconds < 0 ? "-" : "";
+    const abs = Math.abs(seconds);
+    const mins = Math.floor(abs / 60);
+    const secs = abs % 60;
+    return `${sign}${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   // Set up loading timeout
@@ -456,18 +462,21 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
         // Calculate score and get wrong answers
         const { score, wrongAnswers } = calculateScore();
 
-        // Get time taken (either from timeRemaining or use total allowed time)
-        const totalAllowedTime =
-          currentTest.questions.length *
-          (currentUser
-            ? await getUserSettings(currentUser.uid).then(
-                (settings) => settings.secondsPerQuestion
-              )
-            : DEFAULT_SETTINGS.secondsPerQuestion);
+        // Get time taken using stored totalAllowedTime
+        const allowed =
+          totalAllowedTime !== null
+            ? totalAllowedTime
+            :
+              currentTest.questions.length *
+                (currentUser
+                  ? await getUserSettings(currentUser.uid).then(
+                      (settings) => settings.secondsPerQuestion
+                    )
+                  : DEFAULT_SETTINGS.secondsPerQuestion);
         const timeTaken =
-          timeRemaining !== null
-            ? totalAllowedTime - timeRemaining
-            : totalAllowedTime;
+          timeRemaining !== null ? allowed - timeRemaining : allowed;
+        setTotalAllowedTime(allowed);
+        setTimeTakenState(timeTaken);
 
         // Save the attempt
         const savedAttemptId = await saveTestAttempt(
@@ -495,6 +504,7 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
           currentTest.name,
           score,
           currentTest.questions.length,
+          allowed,
           timeTaken,
           wrongAnswers
         );
@@ -575,6 +585,11 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
           <p className="score-text">
             You got {score} out of {total} questions correct
           </p>
+          {timeTakenState !== null && totalAllowedTime !== null && (
+            <p className="time-summary">
+              Time: {formatTime(timeTakenState)} / {formatTime(totalAllowedTime)} allotted
+            </p>
+          )}
         </div>
 
         {/* Show saving status */}

@@ -147,6 +147,7 @@ The SAT Practice Team
     testName: string,
     score: number,
     totalQuestions: number,
+    allocatedTime: number,
     timeTaken: number,
     recipientEmail: string,
     additionalEmails: string[] = [],
@@ -169,10 +170,10 @@ The SAT Practice Team
         return false;
       }
 
-      // Format time taken
-      const minutes = Math.floor(timeTaken / 60);
-      const seconds = timeTaken % 60;
-      const timeFormatted = `${minutes}m ${seconds}s`;
+      // Format times
+      const format = (s: number) => `${Math.floor(s / 60)}m ${s % 60}s`;
+      const timeFormatted = format(timeTaken);
+      const allocatedFormatted = format(allocatedTime);
 
       // Calculate percentage score
       const percentage = Math.round((score / totalQuestions) * 100);
@@ -244,6 +245,7 @@ You have completed the SAT practice test "${testName}".
 Test Results:
 - Score: ${score}/${totalQuestions} (${percentage}%)
 - Time Taken: ${timeFormatted}
+- Time Allocated: ${allocatedFormatted}
 
 You can review your answers here: ${reviewUrl}
 Want to try again? Retake the test: ${retakeUrl}
@@ -267,8 +269,9 @@ The SAT Practice Team
         <div style="font-size: 16px;">${percentage}%</div>
       </div>
       <div style="text-align: center; padding: 10px 15px; background-color: white; border-radius: 5px; flex: 1;">
-        <div style="font-size: 14px; color: #666;">Time Taken</div>
+        <div style="font-size: 14px; color: #666;">Time</div>
         <div style="font-size: 24px; font-weight: bold; color: #2c6ecf;">${timeFormatted}</div>
+        <div style="font-size: 14px; color: #666;">Allocated: ${allocatedFormatted}</div>
       </div>
     </div>
   </div>
