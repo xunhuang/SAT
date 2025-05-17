@@ -7,7 +7,8 @@ import {
   where,
   orderBy,
   Timestamp,
-  getDoc
+  getDoc,
+  deleteDoc
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import { SATQuestion } from './api';
@@ -206,6 +207,19 @@ export const getTestAttemptById = async (attemptId: string): Promise<TestAttempt
     return null;
   } catch (error) {
     console.error('[testAttemptService] Error getting test attempt:', error);
+    throw error;
+  }
+};
+
+/**
+ * Delete a test attempt by ID
+ */
+export const deleteTestAttempt = async (attemptId: string): Promise<void> => {
+  try {
+    await deleteDoc(doc(db, 'testAttempts', attemptId));
+    console.log('[testAttemptService] Test attempt deleted from Firestore:', attemptId);
+  } catch (error) {
+    console.error('[testAttemptService] Error deleting test attempt:', error);
     throw error;
   }
 };
