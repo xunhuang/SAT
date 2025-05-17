@@ -89,20 +89,25 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
     setError(null);
 
     try {
-      // Get the latest user settings right before creating the test
+      // Optionally fetch the latest settings (in case they changed in another tab)
       try {
         const userSettings = await getUserSettings(currentUser.uid);
-        // Update question count with the latest setting
-        if (userSettings.defaultQuestionCount !== questionCount) {
-          console.log('[TestList] Updating question count from settings:', userSettings.defaultQuestionCount);
+
+        // If the stored default differs from the current input and the user has
+        // not modified the value, update it so the UI stays in sync. Otherwise
+        // keep the user's chosen value.
+        if (questionCount === DEFAULT_SETTINGS.defaultQuestionCount &&
+            userSettings.defaultQuestionCount !== questionCount) {
           setQuestionCount(userSettings.defaultQuestionCount);
         }
-        
-        // Use the fresh settings for test creation
-        const freshQuestionCount = userSettings.defaultQuestionCount;
-        
-        // Call the backend to generate and save the test
-        const response = await generateTest(currentUser.uid, newTestName, freshQuestionCount);
+
+        // Call the backend to generate and save the test using the value from
+        // the input field
+        const response = await generateTest(
+          currentUser.uid,
+          newTestName,
+          questionCount
+        );
 
         if (response.error) {
           console.error('[TestList] Error generating test:', response.error);
