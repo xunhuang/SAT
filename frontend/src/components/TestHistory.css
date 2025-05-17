@@ -98,6 +98,19 @@
   transform: translateY(-1px);
 }
 
+.delete-attempt-button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #95a5a6;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.delete-attempt-button:hover {
+  color: #e74c3c;
+}
+
 .loading, .error {
   text-align: center;
   padding: 2rem;

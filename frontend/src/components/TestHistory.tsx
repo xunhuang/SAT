@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from './AuthProvider';
-import { getUserTestAttempts, TestAttempt } from '../services/testAttemptService';
+import {
+  getUserTestAttempts,
+  deleteTestAttempt,
+  TestAttempt
+} from '../services/testAttemptService';
 import './TestHistory.css';
 
 const TestHistory = () => {
@@ -43,6 +47,17 @@ const TestHistory = () => {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  // Delete an attempt and update state
+  const handleDeleteAttempt = async (attemptId: string) => {
+    try {
+      await deleteTestAttempt(attemptId);
+      setAttempts((prev) => prev.filter((a) => a.id !== attemptId));
+    } catch (err) {
+      console.error('Error deleting attempt:', err);
+      setError('Failed to delete attempt.');
+    }
   };
 
   if (!currentUser) {
@@ -87,6 +102,13 @@ const TestHistory = () => {
                   <Link to={`/retake/${attempt.id}`} className="retake-button">
                     Retake
                   </Link>
+                  <button
+                    className="delete-attempt-button"
+                    onClick={() => handleDeleteAttempt(attempt.id)}
+                    aria-label="Delete attempt"
+                  >
+                    ×
+                  </button>
                 </td>
               </tr>
             ))}
