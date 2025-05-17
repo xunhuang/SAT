@@ -169,104 +169,66 @@
   margin-bottom: 1rem;
 }
 
-.tests-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1rem;
+/* Table layout for available tests */
+.tests-table {
+  width: 100%;
+  border-collapse: collapse;
   margin-top: 1rem;
 }
 
-.test-card {
-  display: flex;
-  flex-direction: column;
-  background-color: #ffffff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e1e8ed;
-  transition: all 0.3s ease;
-}
-
-.test-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-}
-
-.test-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
+.tests-table th,
+.tests-table td {
+  padding: 0.75rem;
+  text-align: left;
   border-bottom: 1px solid #e1e8ed;
 }
 
-.test-card-header h2 {
-  margin: 0;
-  font-size: 1.2rem;
+.tests-table th {
+  background-color: #f8f9fa;
   color: #2c3e50;
   font-weight: 600;
+}
+
+.tests-table tbody tr:hover {
+  background-color: #f5f7f9;
+}
+
+.test-name {
+  font-weight: 500;
+  color: #34495e;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .delete-test-button {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   color: #95a5a6;
   cursor: pointer;
   transition: color 0.2s ease;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
 }
 
 .delete-test-button:hover {
   color: #e74c3c;
-  background-color: #f8f9fa;
-}
-
-.test-card-body {
-  padding: 1rem;
-  flex-grow: 1;
-}
-
-.question-count {
-  font-size: 1.1rem;
-  color: #34495e;
-  margin: 0 0 0.5rem 0;
-  font-weight: 500;
-}
-
-.created-date {
-  font-size: 0.9rem;
-  color: #7f8c8d;
-  margin: 0;
-}
-
-.test-card-footer {
-  padding: 1rem;
-  border-top: 1px solid #e1e8ed;
-  display: flex;
-  justify-content: center;
 }
 
 .start-test-button {
-  display: block;
-  width: 100%;
-  padding: 12px 20px;
+  padding: 6px 12px;
   background-color: #3498db;
-  color: white;
+  color: #ffffff;
   text-align: center;
   text-decoration: none;
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
   font-weight: 600;
+  display: inline-block;
 }
 
 .start-test-button:hover {
   background-color: #2980b9;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }

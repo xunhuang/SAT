@@ -230,45 +230,47 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
             <p>Click "Add New Test" to create your first practice test!</p>
           </div>
         ) : (
-          <div className="tests-grid">
-            {tests.map((test) => (
-              <div key={test.id} className="test-card">
-                <div className="test-card-header">
-                  <h2>{test.name}</h2>
-                  <button
-                    className="delete-test-button"
-                    onClick={() => deleteTest(test.id)}
-                    aria-label="Delete test"
-                  >
-                    ×
-                  </button>
-                </div>
-                <div className="test-card-body">
-                  <p className="question-count">
-                    {test.questions.length} Questions
-                  </p>
-                  <p className="created-date">
-                    Created: {formatDate(test.createdAt)}
-                  </p>
-                </div>
-                <div className="test-card-footer">
-                  <Link
-                    to={`/test/${test.id}`}
-                    className="start-test-button"
-                    onClick={() =>
-                      console.log(
-                        "[TestList] Starting test:",
-                        test.id,
-                        test.name
-                      )
-                    }
-                  >
-                    Start Practice
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
+          <table className="tests-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Questions</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tests.map((test) => (
+                <tr key={test.id}>
+                  <td className="test-name">{test.name}</td>
+                  <td className="question-count">{test.questions.length}</td>
+                  <td className="created-date">{formatDate(test.createdAt)}</td>
+                  <td className="action-buttons">
+                    <Link
+                      to={`/test/${test.id}`}
+                      className="start-test-button"
+                      onClick={() =>
+                        console.log(
+                          "[TestList] Starting test:",
+                          test.id,
+                          test.name
+                        )
+                      }
+                    >
+                      Start Practice
+                    </Link>
+                    <button
+                      className="delete-test-button"
+                      onClick={() => deleteTest(test.id)}
+                      aria-label="Delete test"
+                    >
+                      ×
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </div>
 
