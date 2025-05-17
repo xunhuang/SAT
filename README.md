@@ -51,7 +51,7 @@ cp .env.example .env
 npm run dev
 ```
 
-The API will be available at: http://localhost:3000/api
+The API will be available at: http://localhost:4000/api
 
 ### Frontend Setup
 
