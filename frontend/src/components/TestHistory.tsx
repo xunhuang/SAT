@@ -63,43 +63,35 @@ const TestHistory = () => {
           <p>Take a test to see your history here!</p>
         </div>
       ) : (
-        <div className="attempt-list">
-          {attempts.map(attempt => (
-            <div key={attempt.id} className="attempt-card">
-              <div className="attempt-header">
-                <h3>{attempt.testName}</h3>
-                <div className="attempt-score">
-                  <span className="score-label">Score:</span>
-                  <span className="score-value">{attempt.percentage}%</span>
-                </div>
-              </div>
-              
-              <div className="attempt-details">
-                <p className="attempt-date">
-                  Completed on {formatDate(attempt.completedAt)}
-                </p>
-                <p className="attempt-progress">
-                  {attempt.score} out of {attempt.totalQuestions} questions correct
-                </p>
-              </div>
-              
-              <div className="attempt-actions">
-                <Link
-                  to={`/review/${attempt.id}`}
-                  className="review-button"
-                >
-                  Review Attempt
-                </Link>
-                <Link
-                  to={`/retake/${attempt.id}`}
-                  className="retake-button"
-                >
-                  Retake Test
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
+        <table className="history-table">
+          <thead>
+            <tr>
+              <th>Test Name</th>
+              <th>Date</th>
+              <th>Score</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {attempts.map((attempt) => (
+              <tr key={attempt.id}>
+                <td className="test-name">{attempt.testName}</td>
+                <td className="attempt-date">{formatDate(attempt.completedAt)}</td>
+                <td className="attempt-score">
+                  {attempt.score} / {attempt.totalQuestions} ({attempt.percentage}%)
+                </td>
+                <td className="attempt-actions">
+                  <Link to={`/review/${attempt.id}`} className="review-button">
+                    Review
+                  </Link>
+                  <Link to={`/retake/${attempt.id}`} className="retake-button">
+                    Retake
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   );
