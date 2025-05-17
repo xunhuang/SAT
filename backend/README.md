@@ -9,7 +9,7 @@ This is the backend API for the SAT Practice application.
 - TypeScript support
 - Error handling middleware
 - Development and production configurations
-- Email notifications for test creation and completion
+- Email notifications for test creation (with question count) and completion
 - Question bank management
 
 ## Setup

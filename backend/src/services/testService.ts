@@ -113,6 +113,7 @@ export default {
           const emailSent = await emailService.sendTestNotification(
             testId,
             testName,
+            questions.length,
             userEmailInfo.email,
             userEmailInfo.notificationEmails
           );
