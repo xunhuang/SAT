@@ -58,6 +58,7 @@ export default {
   async sendTestNotification(
     testId: string,
     testName: string,
+    numQuestions: number,
     recipientEmail: string,
     additionalEmails: string[] = []
   ): Promise<boolean> {
@@ -84,11 +85,11 @@ export default {
       const mailOptions = {
         from: `"SAT Practice" <${EMAIL_FROM}>`,
         to: allRecipients.join(', '),
-        subject: `New SAT Practice Test: ${testName}`,
+        subject: `New SAT Practice Test (${numQuestions} Questions): ${testName}`,
         text: `
 Hello,
 
-A new SAT practice test "${testName}" has been created for you.
+A new SAT practice test "${testName}" with ${numQuestions} questions has been created for you.
 
 You can take the test at: ${testUrl}
 
@@ -102,7 +103,7 @@ The SAT Practice Team
   <p>A new SAT practice test has been created for you:</p>
   <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
     <h3 style="margin-top: 0;">${testName}</h3>
-    <p>This test is now ready for you to take.</p>
+    <p>This test contains <strong>${numQuestions} questions</strong> and is ready for you to take.</p>
   </div>
   <p>
     <a href="${testUrl}" style="display: inline-block; background-color: #2c6ecf; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">
