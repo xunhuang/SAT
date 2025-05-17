@@ -34,6 +34,7 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
   const [showResults, setShowResults] = useState(false);
   const [reviewMode, setReviewMode] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
+  const [showTimer, setShowTimer] = useState(true);
 
   // State for loading and errors
   const [initialLoading, setInitialLoading] = useState(true);
@@ -623,7 +624,17 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
             {reviewMode && <div className="review-badge">Review Mode</div>}
 
             {timeRemaining !== null && !showResults && !reviewMode && (
-              <div className="timer">Time: {formatTime(timeRemaining)}</div>
+              <div className="timer-container">
+                {showTimer && (
+                  <div className="timer">Time: {formatTime(timeRemaining)}</div>
+                )}
+                <button
+                  className="timer-toggle"
+                  onClick={() => setShowTimer((prev) => !prev)}
+                >
+                  {showTimer ? "Hide Timer" : "Show Timer"}
+                </button>
+              </div>
             )}
 
             <div className="question-progress">
