@@ -21,6 +21,7 @@ export default {
         testName,
         score,
         totalQuestions,
+        allocatedTime,
         timeTaken,
         wrongAnswers
       } = req.body;
@@ -46,8 +47,8 @@ export default {
         return res.status(400).json({ error: 'Score and totalQuestions are required' });
       }
       
-      if (timeTaken === undefined) {
-        return res.status(400).json({ error: 'Time taken is required' });
+      if (allocatedTime === undefined || timeTaken === undefined) {
+        return res.status(400).json({ error: 'Allocated time and time taken are required' });
       }
       
       // Get user's email and notification preferences
@@ -89,6 +90,7 @@ export default {
         testName,
         score,
         totalQuestions,
+        allocatedTime,
         timeTaken,
         userEmailInfo.email,
         userEmailInfo.notificationEmails,

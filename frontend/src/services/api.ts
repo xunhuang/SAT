@@ -131,6 +131,7 @@ export const sendTestAttemptEmail = async (
   testName: string,
   score: number,
   totalQuestions: number,
+  allocatedTime: number,
   timeTaken: number,
   wrongAnswers?: WrongAnswer[]
 ): Promise<ApiResponse<{success: boolean, message: string}>> => {
@@ -143,6 +144,7 @@ export const sendTestAttemptEmail = async (
       testName,
       score,
       totalQuestions,
+      allocatedTime,
       timeTaken,
       wrongAnswers
     })

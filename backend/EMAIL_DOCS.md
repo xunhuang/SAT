@@ -25,6 +25,7 @@ Sends an email notification when a test attempt is completed, including test sco
   "testName": "string",
   "score": 8,
   "totalQuestions": 10,
+  "allocatedTime": 600,
   "timeTaken": 300
 }
 ```
@@ -36,6 +37,7 @@ Sends an email notification when a test attempt is completed, including test sco
 - `testName` (required): The name of the test
 - `score` (required): The number of correct answers
 - `totalQuestions` (required): The total number of questions in the test
+- `allocatedTime` (required): The time allocated for the test in seconds
 - `timeTaken` (required): The time taken to complete the test in seconds
 
 **Response:**
@@ -75,6 +77,7 @@ async function sendTestAttemptEmail(
   testName: string,
   score: number,
   totalQuestions: number,
+  allocatedTime: number,
   timeTaken: number
 ): Promise<boolean> {
   try {
@@ -90,6 +93,7 @@ async function sendTestAttemptEmail(
         testName,
         score,
         totalQuestions,
+        allocatedTime,
         timeTaken
       }),
     });
@@ -116,6 +120,7 @@ function onTestSubmit() {
     testName,
     score,
     totalQuestions,
+    allocatedTime,
     timeTaken
   );
   
