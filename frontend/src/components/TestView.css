@@ -30,6 +30,26 @@
   border-radius: 8px;
 }
 
+.timer-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.timer-toggle {
+  background: none;
+  border: none;
+  color: #3498db;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.timer-toggle:hover {
+  text-decoration: underline;
+}
+
 .question-progress {
   font-size: 1rem;
   color: #7f8c8d;
