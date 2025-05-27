@@ -86,7 +86,7 @@ export default {
       const mailOptions = {
         from: `"SAT Practice" <${EMAIL_FROM}>`,
         to: allRecipients.join(', '),
-        subject: `New SAT Practice Test (${numQuestions} Questions): ${testName}`,
+        subject: `${userName} created a new SAT Practice Test (${numQuestions} Questions): ${testName}`,
         text: `
 Hello,
 
@@ -239,7 +239,7 @@ The SAT Practice Team
       const mailOptions = {
         from: `"SAT Practice" <${EMAIL_FROM}>`,
         to: allRecipients.join(', '),
-        subject: `SAT Practice Results: ${testName} - ${score}/${totalQuestions} (${percentage}%)`,
+        subject: `${userName}'s SAT Practice Results: ${testName} - ${score}/${totalQuestions} (${percentage}%)`,
         text: `
 Hello,
 
