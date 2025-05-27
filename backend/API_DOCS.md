@@ -162,6 +162,7 @@ Generates a new test with random SAT questions and persists it to Firestore.
 ```json
 {
   "userId": "string",
+  "userName": "string",
   "testName": "string",
   "numQuestions": 10
 }
@@ -169,6 +170,7 @@ Generates a new test with random SAT questions and persists it to Firestore.
 
 **Parameters:**
 - `userId` (required): The user ID associated with the test
+- `userName` (required): The name of the user creating the test
 - `testName` (required): The name for the new test
 - `numQuestions` (optional): Number of questions to include in the test, defaults to 10
 
@@ -197,6 +199,7 @@ Sends an email notification when a test attempt is completed, including test sco
 ```json
 {
   "userId": "string",
+  "userName": "string",
   "attemptId": "string",
   "testId": "string",
   "testName": "string",
@@ -209,6 +212,7 @@ Sends an email notification when a test attempt is completed, including test sco
 
 **Parameters:**
 - `userId` (required): The user ID of the test taker
+- `userName` (required): The name of the user who completed the test
 - `attemptId` (required): The ID of the completed test attempt
 - `testId` (required): The ID of the test that was taken
 - `testName` (required): The name of the test

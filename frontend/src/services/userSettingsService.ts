@@ -67,7 +67,8 @@ export const sendTestAttemptNotifications = async (
   totalQuestions: number,
   allocatedTime: number,
   timeTaken: number,
-  wrongAnswers?: WrongAnswer[]
+  wrongAnswers?: WrongAnswer[],
+  userName?: string
 ): Promise<boolean> => {
   try {
     console.log('[userSettingsService] Sending test attempt notification email');
@@ -82,7 +83,8 @@ export const sendTestAttemptNotifications = async (
       totalQuestions,
       allocatedTime,
       timeTaken,
-      wrongAnswers
+      wrongAnswers,
+      userName
     );
     
     if (response.error) {

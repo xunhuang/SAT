@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import userSettingsService from '../services/userSettingsService';
 import questionBankService from '../services/questionBankService';
 import testService from '../services/testService';
+import { getFirebaseAdmin } from '../config/firebase';
 
 /**
  * User Controller
@@ -37,6 +38,14 @@ export default {
   async initializeUser(req: Request, res: Response, next: NextFunction) {
     try {
       const { userId } = req.body;
+
+      let userName = '';
+      try {
+        const userRecord = await getFirebaseAdmin().auth().getUser(userId);
+        userName = userRecord.displayName || (userRecord.email ? userRecord.email.split('@')[0] : 'User');
+      } catch (nameErr) {
+        console.error('Error fetching user display name:', nameErr);
+      }
       
       if (!userId) {
         return res.status(400).json({ error: 'User ID is required' });
@@ -58,7 +67,12 @@ export default {
         
         // Create a first test with 10 questions
         console.log(`Creating first test for new user: ${userId}`);
-        const testId = await testService.generateTest(userId, "First Test", 10);
+        const testId = await testService.generateTest(
+          userId,
+          userName,
+          "First Test",
+          10
+        );
         
         res.status(200).json({
           success: true,

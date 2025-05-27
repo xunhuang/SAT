@@ -20,6 +20,7 @@ Sends an email notification when a test attempt is completed, including test sco
 ```json
 {
   "userId": "string",
+  "userName": "string",
   "attemptId": "string",
   "testId": "string",
   "testName": "string",
@@ -32,6 +33,7 @@ Sends an email notification when a test attempt is completed, including test sco
 
 **Parameters:**
 - `userId` (required): The user ID of the test taker
+- `userName` (required): The name of the user who completed the test
 - `attemptId` (required): The ID of the completed test attempt
 - `testId` (required): The ID of the test that was taken
 - `testName` (required): The name of the test
