@@ -97,14 +97,16 @@ export const getQuestionIds = async (): Promise<ApiResponse<string[]>> => {
  * Generate a new test in the backend
  */
 export const generateTest = async (
-  userId: string, 
-  testName: string, 
+  userId: string,
+  userName: string,
+  testName: string,
   numQuestions: number
 ): Promise<ApiResponse<{testId: string}>> => {
   return apiRequest<{testId: string}>('/tests/generate', {
     method: 'POST',
     body: JSON.stringify({
       userId,
+      userName,
       testName,
       numQuestions
     })
@@ -133,7 +135,8 @@ export const sendTestAttemptEmail = async (
   totalQuestions: number,
   allocatedTime: number,
   timeTaken: number,
-  wrongAnswers?: WrongAnswer[]
+  wrongAnswers?: WrongAnswer[],
+  userName?: string
 ): Promise<ApiResponse<{success: boolean, message: string}>> => {
   return apiRequest<{success: boolean, message: string}>('/email/test-attempt', {
     method: 'POST',
@@ -146,7 +149,8 @@ export const sendTestAttemptEmail = async (
       totalQuestions,
       allocatedTime,
       timeTaken,
-      wrongAnswers
+      wrongAnswers,
+      userName
     })
   });
 };

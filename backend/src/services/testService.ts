@@ -28,7 +28,12 @@ export default {
    * @param numQuestions Number of questions to include
    * @returns Promise<string> Test ID
    */
-  async generateTest(userId: string, testName: string, numQuestions: number): Promise<string> {
+  async generateTest(
+    userId: string,
+    userName: string,
+    testName: string,
+    numQuestions: number
+  ): Promise<string> {
     try {
       let questions = [];
 
@@ -114,6 +119,7 @@ export default {
             testId,
             testName,
             questions.length,
+            userName,
             userEmailInfo.email,
             userEmailInfo.notificationEmails
           );

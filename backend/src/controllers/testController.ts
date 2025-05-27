@@ -12,7 +12,7 @@ export default {
    */
   async generateTest(req: Request, res: Response, next: NextFunction) {
     try {
-      const { userId, testName, numQuestions } = req.body;
+      const { userId, userName, testName, numQuestions } = req.body;
       
       // Input validation
       if (!userId) {
@@ -31,7 +31,12 @@ export default {
       }
       
       // Generate test
-      const testId = await testService.generateTest(userId, testName, questionsCount);
+      const testId = await testService.generateTest(
+        userId,
+        userName,
+        testName,
+        questionsCount
+      );
       
       res.status(201).json({
         success: true,

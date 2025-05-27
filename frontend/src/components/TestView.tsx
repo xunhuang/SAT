@@ -539,7 +539,7 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
           wrongAnswers.length,
           "wrong answers in email"
         );
-        const emailSent = await sendTestAttemptNotifications(
+       const emailSent = await sendTestAttemptNotifications(
           currentUser.uid,
           savedAttemptId,
           currentTest.id,
@@ -548,7 +548,9 @@ const TestView = ({ tests, fromRetake = false }: TestViewProps) => {
           currentTest.questions.length,
           allowed,
           timeTaken,
-          wrongAnswers
+          wrongAnswers,
+          currentUser.displayName ||
+            (currentUser.email ? currentUser.email.split('@')[0] : 'User')
         );
 
         if (emailSent) {

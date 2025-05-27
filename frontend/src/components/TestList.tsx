@@ -105,6 +105,8 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
         // the input field
         const response = await generateTest(
           currentUser.uid,
+          currentUser.displayName ||
+            (currentUser.email ? currentUser.email.split('@')[0] : 'User'),
           newTestName,
           questionCount
         );
@@ -134,7 +136,13 @@ const TestList = ({ tests, updateTests, isLoadingTests = false }: TestListProps)
         // Fall back to current state value if settings fetch fails
         
         // Call the backend to generate and save the test
-        const response = await generateTest(currentUser.uid, newTestName, questionCount);
+        const response = await generateTest(
+          currentUser.uid,
+          currentUser.displayName ||
+            (currentUser.email ? currentUser.email.split('@')[0] : 'User'),
+          newTestName,
+          questionCount
+        );
 
         if (response.error) {
           console.error('[TestList] Error generating test:', response.error);

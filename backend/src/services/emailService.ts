@@ -59,6 +59,7 @@ export default {
     testId: string,
     testName: string,
     numQuestions: number,
+    userName: string,
     recipientEmail: string,
     additionalEmails: string[] = []
   ): Promise<boolean> {
@@ -89,7 +90,7 @@ export default {
         text: `
 Hello,
 
-A new SAT practice test "${testName}" with ${numQuestions} questions has been created for you.
+${userName} created a new SAT practice test "${testName}" with ${numQuestions} questions.
 
 You can take the test at: ${testUrl}
 
@@ -100,7 +101,7 @@ The SAT Practice Team
         html: `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
   <h2 style="color: #2c6ecf;">New SAT Practice Test</h2>
-  <p>A new SAT practice test has been created for you:</p>
+  <p>${userName} created a new SAT practice test for you:</p>
   <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
     <h3 style="margin-top: 0;">${testName}</h3>
     <p>This test contains <strong>${numQuestions} questions</strong> and is ready for you to take.</p>
@@ -150,6 +151,7 @@ The SAT Practice Team
     totalQuestions: number,
     allocatedTime: number,
     timeTaken: number,
+    userName: string,
     recipientEmail: string,
     additionalEmails: string[] = [],
     wrongAnswers: WrongAnswer[] = [],
@@ -241,7 +243,7 @@ The SAT Practice Team
         text: `
 Hello,
 
-You have completed the SAT practice test "${testName}".
+${userName} completed the SAT practice test "${testName}".
 
 Test Results:
 - Score: ${score}/${totalQuestions} (${percentage}%)
@@ -258,7 +260,7 @@ The SAT Practice Team
         html: `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
   <h2 style="color: #2c6ecf;">Test Results</h2>
-  <p>You have completed the SAT practice test:</p>
+  <p>${userName} completed the SAT practice test:</p>
   <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
     <h3 style="margin-top: 0;">${testName}</h3>
     <div style="display: flex; justify-content: space-between; margin-top: 15px;">
